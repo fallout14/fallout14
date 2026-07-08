@@ -4,6 +4,10 @@ deadmin_on_join = true
 
 [discord]
 rich_main_icon_id = "einstein-engines"
+round_update_webhook = "https://discord.com/api/webhooks/1524538333869510948/qugSbTuF2RbDGpg8tNzxA-8poTpuGmkp0L5_lbp1qULem6WkyqUzCMhYdX26GGyRVLfX"
+ooc_webhook = "https://discord.com/api/webhooks/1524540168009289778/uM57cawKDO8R8PuEYmP7ICbovPcm0IQqDm1CWsM5TC_Y6T4ctHkXsdPCtsQlbCDWZHtE"
+ahelp_webhook = "https://discord.com/api/webhooks/1524538549549137951/noGXY0kiyVIOd17Viw7QfVGgifRb6g_yWrcqaLzGT6j3Bgvo6wbDNppM5Rm1X-TQuEbK"
+admin_chat_webhook = "https://discord.com/api/webhooks/1524538452031307828/PvYozz29vEfBt7-EDnca2q0ymtAaZk4YebhEpYOEzmxLgFHH_wa20zQSuNLy5UVasGck"
 
 [events]
 ramping_average_end_time = 180.0

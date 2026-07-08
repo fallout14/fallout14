@@ -2,7 +2,7 @@ Here is the translation with the original Markdown formatting preserved:
 
 # Fallout 14
 
-**Fallout 14** is a sidestream fork of **[Nuclear 14](https://github.com/Misfit-Sanctuary/nuclear-14)** — the first Fallout-themed fork for Space Station 14, originally created by Peptide90 in 2022 with contributions from the community. While Nuclear 14 / Misfits continues along its own trajectory, Fallout 14 explores a different direction with expanded systems, rebalanced gameplay, and a distinct vision for the wasteland.
+**Fallout 14** is a sidestream fork of **[Nuclear 14](https://github.com/Misfit-Sanctuary/nuclear-14)**, the first Fallout-themed fork for Space Station 14, originally created by Peptide90 in 2022 with contributions from the community.
 
 ## About the Project
 

@@ -1,0 +1,209 @@
+using System.Numerics;
+using Content.Shared._Misfits.Silicon;
+using Content.Shared.Silicons.StationAi;
+using Robust.Client.Graphics;
+using Robust.Client.Player;
+using Robust.Shared.Enums;
+using Robust.Shared.Map;
+using Robust.Shared.Map.Components;
+using Robust.Shared.Physics;
+using Robust.Shared.Prototypes;
+using Robust.Shared.Timing;
+
+namespace Content.Client.Silicons.StationAi;
+
+public sealed class StationAiOverlay : Overlay
+{
+    [Dependency] private readonly IClyde _clyde = default!;
+    [Dependency] private readonly IEntityManager _entManager = default!;
+    [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private readonly IPlayerManager _player = default!;
+    [Dependency] private readonly IPrototypeManager _proto = default!;
+
+    public override OverlaySpace Space => OverlaySpace.WorldSpace;
+
+    private readonly HashSet<Vector2i> _visibleTiles = new();
+
+    private IRenderTexture? _staticTexture;
+    private IRenderTexture? _stencilTexture;
+
+    private float _updateRate = 1f / 30f;
+    private float _accumulator;
+
+    public StationAiOverlay()
+    {
+        IoCManager.InjectDependencies(this);
+    }
+
+    protected override void Draw(in OverlayDrawArgs args)
+    {
+        if (_stencilTexture?.Texture.Size != args.Viewport.Size)
+        {
+            _staticTexture?.Dispose();
+            _stencilTexture?.Dispose();
+            _stencilTexture = _clyde.CreateRenderTarget(args.Viewport.Size, new RenderTargetFormatParameters(RenderTargetColorFormat.Rgba8Srgb), name: "station-ai-stencil");
+            _staticTexture = _clyde.CreateRenderTarget(args.Viewport.Size,
+                new RenderTargetFormatParameters(RenderTargetColorFormat.Rgba8Srgb),
+                name: "station-ai-static");
+        }
+
+        var worldHandle = args.WorldHandle;
+
+        var worldBounds = args.WorldBounds;
+
+        var playerEnt = _player.LocalEntity;
+        _entManager.TryGetComponent(playerEnt, out TransformComponent? playerXform);
+        var gridUid = playerXform?.GridUid ?? EntityUid.Invalid;
+        _entManager.TryGetComponent(gridUid, out MapGridComponent? grid);
+        _entManager.TryGetComponent(gridUid, out BroadphaseComponent? broadphase);
+
+        var invMatrix = args.Viewport.GetWorldToLocalMatrix();
+        _accumulator -= (float) _timing.FrameTime.TotalSeconds;
+
+        if (grid != null && broadphase != null)
+        {
+            var lookups = _entManager.System<EntityLookupSystem>();
+            var xforms = _entManager.System<SharedTransformSystem>();
+
+            if (_accumulator <= 0f)
+            {
+                _accumulator = MathF.Max(0f, _accumulator + _updateRate);
+                _visibleTiles.Clear();
+                _entManager.System<StationAiVisionSystem>().GetView((gridUid, broadphase, grid), worldBounds, _visibleTiles);
+            }
+
+            var gridMatrix = xforms.GetWorldMatrix(gridUid);
+            var matty =  Matrix3x2.Multiply(gridMatrix, invMatrix);
+
+            // Draw visible tiles to stencil
+            worldHandle.RenderInRenderTarget(_stencilTexture!, () =>
+            {
+                worldHandle.SetTransform(matty);
+
+                foreach (var tile in _visibleTiles)
+                {
+                    var aabb = lookups.GetLocalBounds(tile, grid.TileSize);
+                    worldHandle.DrawRect(aabb, Color.White);
+                }
+            },
+            Color.Transparent);
+
+            // Once this is gucci optimise rendering.
+            worldHandle.RenderInRenderTarget(_staticTexture!,
+            () =>
+            {
+                worldHandle.SetTransform(invMatrix);
+                var shader = _proto.Index<ShaderPrototype>("CameraStatic").Instance();
+                worldHandle.UseShader(shader);
+                worldHandle.DrawRect(worldBounds, Color.White);
+            },
+            Color.Black);
+        }
+        // Not on a grid
+        else
+        {
+            worldHandle.RenderInRenderTarget(_stencilTexture!, () =>
+            {
+            },
+            Color.Transparent);
+
+            worldHandle.RenderInRenderTarget(_staticTexture!,
+            () =>
+            {
+                worldHandle.SetTransform(Matrix3x2.Identity);
+                worldHandle.DrawRect(worldBounds, Color.Black);
+            }, Color.Black);
+        }
+
+        // Use the lighting as a mask
+        worldHandle.UseShader(_proto.Index<ShaderPrototype>("StencilMask").Instance());
+        worldHandle.DrawTextureRect(_stencilTexture!.Texture, worldBounds);
+
+        // Draw the static
+        worldHandle.UseShader(_proto.Index<ShaderPrototype>("StencilDraw").Instance());
+        worldHandle.DrawTextureRect(_staticTexture!.Texture, worldBounds);
+
+        worldHandle.SetTransform(Matrix3x2.Identity);
+        worldHandle.UseShader(null);
+
+        // [Changed by MisfitsCrew/Operator] Draws Station AI command feedback only for the local AI player.
+        DrawMoveTargetPreviews(worldHandle, args);
+        DrawSelectedNpcs(worldHandle, args);
+    }
+
+    // [Changed by MisfitsCrew/Operator] Shows queued and formation movement destination tiles for the local AI only.
+    private void DrawMoveTargetPreviews(DrawingHandleWorld worldHandle, in OverlayDrawArgs args)
+    {
+        var playerEnt = _player.LocalEntity;
+        if (playerEnt == null ||
+            !_entManager.TryGetComponent(playerEnt.Value, out StationAiNpcCommanderComponent? commander) ||
+            commander.MoveTargetPreviews.Count == 0)
+        {
+            return;
+        }
+
+        var xforms = _entManager.System<SharedTransformSystem>();
+        var lookups = _entManager.System<EntityLookupSystem>();
+        var maps = _entManager.System<SharedMapSystem>();
+        var fill = new Color(0.35f, 1f, 0.35f, 0.18f);
+        var outline = new Color(0.35f, 1f, 0.35f, 0.55f);
+
+        foreach (var netCoords in commander.MoveTargetPreviews)
+        {
+            var coords = _entManager.GetCoordinates(netCoords);
+            var mapCoords = coords.ToMap(_entManager, xforms);
+            if (mapCoords.MapId != args.MapId)
+                continue;
+
+            var gridUid = xforms.GetGrid(coords);
+            if (gridUid == null ||
+                !_entManager.TryGetComponent(gridUid.Value, out MapGridComponent? grid))
+            {
+                var box = Box2.CenteredAround(mapCoords.Position, Vector2.One);
+                worldHandle.DrawRect(box, fill);
+                worldHandle.DrawRect(box, outline, filled: false);
+                continue;
+            }
+
+            var tile = maps.LocalToTile(gridUid.Value, grid, coords);
+            var localBounds = lookups.GetLocalBounds(tile, grid.TileSize).Enlarged(-0.05f);
+            var gridMatrix = xforms.GetWorldMatrix(gridUid.Value);
+
+            worldHandle.SetTransform(gridMatrix);
+            worldHandle.DrawRect(localBounds, fill);
+            worldHandle.DrawRect(localBounds, outline, filled: false);
+            worldHandle.SetTransform(Matrix3x2.Identity);
+        }
+    }
+
+    // [Changed by MisfitsCrew/Operator] Highlights currently selected NPCs so AI command state is visible in camera view.
+    private void DrawSelectedNpcs(DrawingHandleWorld worldHandle, in OverlayDrawArgs args)
+    {
+        var playerEnt = _player.LocalEntity;
+        if (playerEnt == null ||
+            !_entManager.TryGetComponent(playerEnt.Value, out StationAiNpcCommanderComponent? commander))
+        {
+            return;
+        }
+
+        var xforms = _entManager.System<SharedTransformSystem>();
+        var fill = new Color(0.1f, 0.85f, 1f, 0.12f);
+        var outline = new Color(0.1f, 0.85f, 1f, 0.85f);
+
+        foreach (var selected in commander.SelectedNpcs)
+        {
+            if (!_entManager.TryGetComponent(selected, out TransformComponent? xform) ||
+                xform.MapID != args.MapId)
+            {
+                continue;
+            }
+
+            var worldPos = xforms.GetWorldPosition(xform);
+            if (!args.WorldAABB.Contains(worldPos))
+                continue;
+
+            worldHandle.DrawCircle(worldPos, 0.75f, fill);
+            worldHandle.DrawCircle(worldPos, 0.75f, outline, filled: false);
+        }
+    }
+}

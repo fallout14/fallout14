@@ -1,0 +1,64 @@
+- type: entity
+  parent: N14ClothingHeadHatCombatHelmet
+  id: FalloutNCRmilitarypoliceHelmet
+  name: NCR Military Police Helmet
+  description: A helmet worn by the NCR Military Police.
+  components:
+  - type: Sprite
+    sprite: _Nuclear14/Clothing/Head/FalloutHelmets/falloutNCRmilitarypolicehelmet.rsi
+  - type: Clothing
+    sprite: _Nuclear14/Clothing/Head/FalloutHelmets/falloutNCRmilitarypolicehelmet.rsi
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.85
+        Slash: 0.90
+        Piercing: 0.90
+
+- type: entity
+  parent: ClothingHeadBase
+  id: N14ClothingHeadHatNCRSlouch
+  name: NCR slouch hat
+  description: An irregular issue NCR sun hat, the left side of the brim is pinned to the crown for ease with shouldering rifles
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/sloachhead.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/sloachhead.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadAntlerSkull
+  name: antler skullcap
+  description: An antler skull headdress traditionally worn by the spiritually inclined.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/antlerhelm.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/antlerhelm.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadRedBandana
+  name: red bandana
+  description: A bandana. Tougher than it looks.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/redbandana.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/redbandana.rsi
+
+- type: entity
+  parent: N14ClothingHeadHatCombatHelmet
+  id: MisfitsClothingHeadRadstagHelmet
+  name: radstag ritual skull helmet
+  description: A radstag skull headdress, painted and draped in heavy leather.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/Helmets/radstag-helmet.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/Helmets/radstag-helmet.rsi
+  - type: HideLayerClothing
+    slots:
+    - Hair
+    - Snout

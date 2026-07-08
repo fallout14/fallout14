@@ -1,0 +1,409 @@
+# #Misfits Add - Lobby loadouts for SuperMutantWearable-tagged clothing.
+# These entries allow mutant players to pick species-fitted gear in the lobby.
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantGladiatorLoincloth
+  category: Uniform
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantGladiatorLoincloth
+
+- type: loadout
+  id: ClothingSuperMutantSkullHelmetTribal
+  category: Head
+  cost: 2
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantSkullHelmetTribal
+
+- type: loadout
+  id: ClothingSuperMutantTribalGloves
+  category: Hands
+  cost: 2
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantTribalGloves
+
+- type: loadout
+  id: ClothingSuperMutantZootSuit
+  category: Uniform
+  cost: 2
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantZootSuit
+
+- type: loadout
+  id: ClothingSuperMutantZootHat
+  category: Head
+  cost: 2
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantZootHat
+
+- type: loadout
+  id: ClothingSuperMutantZootBoot
+  category: Shoes
+  cost: 2
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantZootBoot
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantVaultSuit
+  category: Uniform
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantVaultSuit
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantTribalLoincloth
+  category: Uniform
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantTribalLoincloth
+
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantGladiatorArmor
+  category: Outer
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantGladiatorArmor
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantRangerArmor
+  category: Outer
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutantRanger
+        - SuperMutantNCRRanger
+  items:
+    - ClothingSuperMutantRangerArmor
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantTrooperArmor
+  category: Outer
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutantTrooper
+        - SuperMutantNCRTrooper
+  items:
+    - ClothingSuperMutantTrooperArmor
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantOutfitC
+  category: Outer
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantOutfitC
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantGladiatorBoots
+  category: Shoes
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantGladiatorBoots
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantGladiatorHelmet
+  category: Head
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantGladiatorHelmet
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantNeckGuard
+  category: Accessories
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantNeck
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantNeckTrinket
+  category: Accessories
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantNeckTrinket
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantNeckCapeTribal
+  category: Accessories
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantNeckCapeTribal
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantScavengedGloves
+  category: Hands
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantScavengedGloves
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantScavengedArmor
+  category: Outer
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantScavengedArmor
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantScavengedHelmet
+  category: Head
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantScavengedHelmet
+
+- type: loadout
+  id: MisfitsLoadoutSuperMutantScavengedBoots
+  category: Shoes
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - SuperMutant
+        - Nightkin
+        - SuperMutantGladiator
+        - SuperMutantRanger
+        - SuperMutantTrooper
+        - SuperMutantNCRRanger
+        - SuperMutantNCRTrooper
+        - SuperMutantTribal
+        - SuperMutantFollowerDoctor
+  items:
+    - ClothingSuperMutantScavengedBoots

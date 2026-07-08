@@ -1,0 +1,56 @@
+# #Misfits Add - Enclave Scientist role (mid-tier science).
+# #Misfits Change - Expanded species, added rank pin, tiered access, playtime gate.
+
+- type: job
+  id: EnclaveScientist
+  setPreference: true
+  hideWithoutJobWhitelist: true
+  jobWhitelistBypassesRoleTimers: true # #Misfits Change
+  weight: 106
+  displayWeight: 125
+  overrideConsoleVisibility: false
+  canBeAntag: false
+  name: job-name-enclave-scientist
+  description: job-description-enclave-scientist
+  playTimeTracker: EnclaveScientist
+  requirements:
+    - !type:CharacterSpeciesRequirement
+      species:
+      - Human
+      - Ghoul
+    - !type:CharacterDepartmentTimeRequirement # #Misfits Tweak - T4 faction timelock (12h Enclave)
+      department: Enclave
+      min: 43200 # 12 hours
+  startingGear: EnclaveScientistGear
+  icon: "JobIconEnclaveScientist"
+  supervisors: job-supervisors-enclave-scientist
+  alwaysUseSpawner: true
+  accessGroups:
+  - EnclaveScientist
+  special:
+  - !type:AddComponentSpecial
+    components:
+      - type: NpcFactionMember
+        factions:
+          - Enclave
+      - type: CPRTraining
+
+- type: startingGear
+  id: EnclaveScientistGear
+  equipment:
+    head: N14ClothingHeadHatEnclaveScientist
+    back: N14ClothingBackpackSatchelMilitary
+    jumpsuit: N14ClothingUniformJumpsuitEnclave
+    shoes: N14ClothingBootsLeatherFilled
+    neck: ClothingNeckPinEnclaveScientist
+    belt: ClothingBeltMilitary
+    ears: N14ClothingHeadsetEnclave
+    pocket2: EnclaveScientistloadoutkits
+    id: N14IDEnclaveNoncombat
+  satchel: N14ClothingBackpackSatchelMilitaryFilled
+  storage:
+    back:
+    - N14BoxPlasticFilledMilitary
+
+- type: playTimeTracker
+  id: EnclaveScientist

@@ -1,0 +1,44 @@
+- type: job
+  id: Wastelander
+  setPreference: true
+  weight: 20 # #Misfits Change - no longer default starter, pushed down
+  overrideConsoleVisibility: false
+  canBeAntag: false
+  name: job-name-wastelander
+  description: job-description-wastelander
+  playTimeTracker: Wastelander
+  startingGear: WastelanderGear
+  icon: "JobIconWastelander" # Corvax-Change
+  supervisors: job-supervisors-wastelander
+  requirements: # #Misfits Change: 8h playtime lock, block non-human species
+    - !type:CharacterSpeciesRequirement
+      species:
+      - Human
+      - Ghoul
+      - GhoulGlowing
+    - !type:CharacterOverallTimeRequirement
+      min: 28800 # #Misfits Add - 8 hours total playtime
+  special:
+  - !type:AddComponentSpecial
+    components:
+      - type: NpcFactionMember
+        factions:
+          - Wastelander
+
+- type: startingGear
+  id: WastelanderGear
+  equipment:
+    jumpsuit: N14ClothingUniformJumpsuitRags
+    ears: MisfitsClothingHeadsetWastelandScrap
+    back: N14ClothingBackpackExplorer # Corvax-Change
+    shoes: N14ClothingShoesRags
+    id: N14ClothingNeckDogtags # #Misfits Change - wastelanders get dogtags as ID, no Pip-Boy
+  innerClothingSkirt: N14ClothingUniformJumpskirtFalloutBlack
+  satchel: N14ClothingBackpackSatchelWastelanderFilled
+  duffelbag: N14ClothingBackpackDuffelFilled
+  storage: # Corvax-Change
+    back:
+    - N14BoxPlasticFilledWastelander
+
+- type: playTimeTracker
+  id: Wastelander

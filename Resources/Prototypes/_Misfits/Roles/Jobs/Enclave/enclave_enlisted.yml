@@ -1,0 +1,57 @@
+# #Misfits Add - Enclave Enlisted role (Private through Specialist).
+
+- type: job
+  id: EnclaveEnlisted
+  setPreference: true
+  hideWithoutJobWhitelist: true
+  jobWhitelistBypassesRoleTimers: true # #Misfits Change
+  weight: 100
+  displayWeight: 122
+  overrideConsoleVisibility: false
+  canBeAntag: false
+  name: job-name-enclave-enlisted
+  description: job-description-enclave-enlisted
+  playTimeTracker: EnclaveEnlisted
+  requirements:
+    - !type:CharacterSpeciesRequirement
+      species:
+      - Human
+      - Ghoul
+    - !type:CharacterDepartmentTimeRequirement # #Misfits Tweak - T2 faction timelock (4h Enclave)
+      department: Enclave
+      min: 14400 # 4 hours
+  startingGear: EnclaveEnlistedGear
+  icon: "JobIconEnclaveEnlisted"
+  supervisors: job-supervisors-enclave
+  alwaysUseSpawner: true
+  accessGroups:
+  - EnclaveEnlisted
+  special:
+  - !type:AddComponentSpecial
+    components:
+      - type: NpcFactionMember
+        factions:
+          - Enclave
+
+- type: startingGear
+  id: EnclaveEnlistedGear
+  equipment:
+    head: N14ClothingHeadHatEnclavePeacekeeperCap
+    back: N14ClothingBackpackMilitary
+    jumpsuit: N14ClothingUniformJumpsuitEnclave
+    outerClothing: N14ClothingOuterEnclavePeacekeeper
+    shoes: N14ClothingBootsCombatFilled
+    gloves: N14ClothingHandsGlovesCombat
+    neck: ClothingNeckPinEnclavePrivate
+    belt: ClothingBeltMilitary
+    ears: N14ClothingHeadsetEnclave
+    pocket1: EnclaveSoldierloadoutkits
+    id: N14IDEnclaveTrooper
+  satchel: N14ClothingBackpackSatchelMilitaryFilled
+  duffelbag: N14ClothingBackpackDuffelMilitaryFilled
+  storage:
+    back:
+    - N14BoxPlasticFilledMilitary
+
+- type: playTimeTracker
+  id: EnclaveEnlisted

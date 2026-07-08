@@ -1,0 +1,49 @@
+- type: trait
+  id: N14TribalAccent
+  category: Speech
+  points: 1
+  requirements:
+  - !type:CharacterLogicOrRequirement
+    requirements:
+    - !type:CharacterTraitRequirement
+      traits:
+      - LanguageTribal
+      - LanguageTribalGeneral
+    - !type:CharacterDepartmentRequirement
+      departments:
+      - Tribe
+  - !type:CharacterTraitRequirement
+    inverted: true
+    traits:
+    - N14FrontalLisp
+    - N14Liar
+    - N14ScottishAccent
+    - N14FrenchieAccent
+  functions:
+  - !type:TraitAddComponent
+    components:
+    - type: TribalAccent
+
+- type: trait
+  id: LanguageTribalGeneral
+  category: Speech
+  points: -6
+  requirements:
+  - !type:CharacterDepartmentRequirement
+    inverted: true
+    departments:
+    - Tribe    # Tribe gets the language by default
+    - Rangers  # Rangers get the discounted version
+    - Enclave
+    - Vault
+    - FollowersOfTheApocalypse  # FotA get the discounted version
+  - !type:CharacterTraitRequirement
+    inverted: true
+    traits:
+    - LanguageTribal
+  functions:
+  - !type:TraitModifyLanguages
+    languagesSpoken:
+    - Tribal
+    languagesUnderstood:
+    - Tribal

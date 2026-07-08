@@ -1,0 +1,181 @@
+# #Misfits Add - Pet companion traits for the Pets perk tree (globally available, no role restrictions)
+# Each pet spawns a separate invisible ghost-role spawner entity via TraitSpawnEntity,
+# allowing multiple pets to each register their own ghost role independently.
+
+# Dog Companion — generic wasteland dog, available to all roles, costs 8 perk points
+- type: trait
+  id: N14PetDogCompanion
+  category: Pets
+  points: -8
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerDog
+
+# Brahmin — two-headed pack animal, available to all roles, costs 10 perk points
+- type: trait
+  id: N14PetBrahmin
+  category: Pets
+  points: -10
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerBrahmin
+
+# Mirelurk — irradiated crustacean companion, available to all roles, costs 8 perk points
+- type: trait
+  id: N14PetMirelurk
+  category: Pets
+  points: -8
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerMirelurk
+
+# Rad Chicken — glowing wasteland chicken, available to all roles, costs 5 perk points
+- type: trait
+  id: N14PetRadChicken
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerRadChicken
+
+# Cat — a basic cat companion, available to all roles, costs 5 perk points (NOT MobCatFloppa, NOT N14MobCatHaggis)
+- type: trait
+  id: N14PetCat
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCat
+
+- type: trait
+  id: N14PetCatBlack
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatBlack
+
+- type: trait
+  id: N14PetCatBrownTabby
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatBrownTabby
+
+- type: trait
+  id: N14PetCatCalico
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatCalico
+
+- type: trait
+  id: N14PetCatGingerTabby
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatGingerTabby
+
+- type: trait
+  id: N14PetCatGrayTabby
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatGrayTabby
+
+- type: trait
+  id: N14PetCatMela
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatMela
+
+- type: trait
+  id: N14PetCatOcicat
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatOcicat
+
+- type: trait
+  id: N14PetCatSiamese
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatSiamese
+
+- type: trait
+  id: N14PetCatSphinx
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatSphinx
+
+- type: trait
+  id: N14PetCatTortoiseshell
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatTortoiseshell
+
+- type: trait
+  id: N14PetCatWhite
+  category: Pets
+  points: -5
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCatWhite
+
+# Centaur — FEV-warped creature, SUPERMUTANT ONLY (FEVMutants department), costs 8 perk points
+# Placeholder — full implementation pending dedicated pet centaur prototype
+- type: trait
+  id: N14PetCentaur
+  category: Pets
+  points: -8
+  requirements:
+    - !type:CharacterDepartmentRequirement
+      departments:
+        - FEVMutants
+  functions:
+    - !type:TraitSpawnEntity
+      prototypes:
+        - MisfitsPetSpawnerCentaur
+
+# Tribe-exclusive variant of the Eyebot pet
+- type: trait
+  id: MisfitsPetEyebotTribe
+  category: Pets
+  points: -6
+  requirements:
+  - !type:CharacterDepartmentRequirement
+    departments:
+    - Tribe
+  functions:
+  - !type:TraitSpawnEntity
+    prototypes:
+    - MisfitsPetSpawnerEyebotTribe

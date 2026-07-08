@@ -1,0 +1,1008 @@
+- type: storeContractPack
+  id: PackBazar
+  contracts:
+  - id: caravan_contract_N14FoodMeatRadRaw
+    weight: 50
+  - id: caravan_contract_N14MaterialThread
+    weight: 50
+  - id: caravan_contract_MaterialCloth
+    weight: 50
+  - id: caravan_contract_N14FloraLogTimber
+    weight: 50
+  - id: caravan_contract_MaterialWoodPlank1
+    weight: 50
+  - id: caravan_contract_N14FloraProduceWildCoyoteTobacco
+    weight: 50
+  - id: caravan_contract_N14FoodDogfood
+    weight: 50
+  - id: caravan_contract_N14WeaponSniper556VarmintRifle
+    weight: 50
+  - id: caravan_contract_N14Scrap1
+    weight: 50
+  - id: caravan_contract_N14Scraps
+    weight: 50
+  - id: caravan_contract_N14Weapon9mm
+    weight: 50
+  - id: caravan_contract_N14MaterialLeather1
+    weight: 50
+  - id: caravan_contract_N14FloraProduceWildCaveFungusRad
+    weight: 50
+  - id: caravan_contract_N14BrassKnife
+    weight: 50
+  - id: caravan_contract_N14FloraProduceWildCarrot
+    weight: 50
+  - id: caravan_contract_N14DrinkNukaCola
+    weight: 50
+  - id: caravan_contract_N14MobRaiderPsycho
+    weight: 50
+  - id: caravan_contract_N14MobGhoulFeral
+    weight: 50
+  # - id: caravan_contract_N14CookedFoodEggDeathclawBoiled- you're not finding one blud -pierow
+    # weight: 50
+  - id: caravan_contract_N14MobDeathclawMetal
+    weight: 50
+  - id: caravan_contract_N14SuperSledgeHammer
+    weight: 50
+  - id: caravan_contract_N14MobCazador
+    weight: 50
+  - id: caravan_contract_N14MobRaiderBoss
+    weight: 50
+  - id: caravan_contract_N14MobDeathclaw
+    weight: 50
+  - id: caravan_contract_N14FloraProduceWildBrocFlower
+    weight: 50
+  # Misfits Add — new contracts: Easy
+  #- id: caravan_contract_N14FoodCannedFish # fish aint mapped
+  #  weight: 50
+  - id: caravan_contract_N14FoodEggChicken
+    weight: 50
+  # - id: caravan_contract_N14MobJackal - removed, impossible to complete -pierow
+    # weight: 50
+  - id: caravan_contract_N14Whip
+    weight: 50
+  # Misfits Add — new contracts: Medium
+  - id: caravan_contract_N14MobRadscorpion
+    weight: 50
+  - id: caravan_contract_N14MobMirelurk
+    weight: 50
+  - id: caravan_contract_N14WeaponRifleAk112
+    weight: 50
+  - id: caravan_contract_N14ClothingLegionReconArmor
+    weight: 50
+  - id: caravan_contract_N14PilumSpear
+    weight: 50
+  # Misfits Add — new contracts: Hard
+  #- id: caravan_contract_N14MobDeathclawicy -this is impossible; not mapped in. We're in Utah for god's sake man! -pierow
+    #weight: 50
+  - id: caravan_contract_N14MobRadMirelurk
+    weight: 50
+  # Misfits Add — new Gold contracts
+  - id: caravan_contract_N14Gladius
+    weight: 50
+  #- id: caravan_contract_N14WeaponLaserRifleYk42b -another impossible contract; item not obtainable -pierow
+    #weight: 50
+  - id: caravan_contract_N14VeteranLegionArmor
+    weight: 50
+  # Misfits Add — new Mithril contract
+  # - id: caravan_contract_N14MobCazador #removed, just buggy -pierow
+    # weight: 50
+  # Misfits Add — new Diamond contracts
+  - id: caravan_contract_N14MobDeathclawGrandHunt
+    weight: 50
+  - id: caravan_contract_N14WeaponPlasmaRifleDelivery
+    weight: 50
+  - id: caravan_contract_N14VaultPDA #5 new contracts -pierow  N14CurrencyPrewar
+    weight: 50
+  - id: caravan_contract_N14ChineseSword 
+    weight: 50
+  - id: caravan_contract_N14HolotapeQuestGECK
+    weight: 50
+  - id: caravan_contract_N14HolotapeEnclave
+    weight: 50
+  - id: caravan_contract_N14CurrencyPrewar
+    weight: 50
+
+
+- type: storeContractsPreset
+  id: PresetBazar
+  # #Misfits Change — retier system: 6 tiers replace Easy/Medium/Hard -TWEAKED, lower tiers more abundent, higher tiers more scarce
+  limits:
+    Bronze: 5
+    Iron: 3
+    Silver: 2
+    Gold: 2
+    Mithril: 1
+    Diamond: 1
+  packs:
+  - id: PackBazar
+    weight: 1
+
+- type: storeContract
+  id: caravan_contract_N14MaterialThread
+  name: "Threads Required"
+  description: "Threads are required to create new clothing."
+  difficulty: Bronze
+  targets:
+  - id: N14MaterialThread1
+    required: { min: 10, max: 15 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 50, max: 90 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14FloraProduceWildBrocFlower
+  name: "Broc Flower"
+  description: "A medic needs broc flower."
+  difficulty: Bronze
+  targets:
+  - id: N14FloraProduceWildBrocFlower
+    required: { min: 5, max: 10 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 60, max: 100 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_MaterialCloth
+  name: "Cloth Needed"
+  description: "Cloth is needed to make new clothing."
+  difficulty: Bronze
+  targets:
+  - id: MaterialCloth1
+    required: { min: 10, max: 20 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 120 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14FloraLogTimber
+  name: "Firewood for Heating"
+  description: "Firewood is needed for heating and construction."
+  difficulty: Bronze
+  targets:
+  - id: N14FloraLogTimber
+    required: { min: 6, max: 10 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 150 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_MaterialWoodPlank1
+  name: "Lumber for the Carpenter"
+  description: "Lumber is needed for the carpenter's work."
+  difficulty: Bronze
+  targets:
+  - id: MaterialWoodPlank1
+    required: { min: 15, max: 30 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 50, max: 80 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14FloraProduceWildCoyoteTobacco
+  name: "Tobacco for Mercenaries"
+  description: "Tobacco is needed for mercenaries' cigarettes."
+  difficulty: Bronze
+  targets:
+  - id: N14FloraProduceWildCoyoteTobacco
+    required: { min: 5, max: 10 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 50, max: 75 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14FoodDogfood
+  name: "Dog Food"
+  description: "My dog needs more food."
+  difficulty: Bronze
+  repeatable: false
+  targets:
+  - id: N14FoodDogfood
+    required: { min: 2, max: 5 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 75, max: 100 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14WeaponSniper556VarmintRifle
+  name: "Weapon for Guard Duty"
+  description: "A weapon is needed for guard duty."
+  difficulty: Iron
+  targets:
+  - id: N14WeaponSniper556VarmintRifle
+    required: { min: 3, max: 5 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 120 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron_nonweapons
+
+- type: storeContract
+  id: caravan_contract_N14FoodMeatRadRaw
+  name: "Meat Collection"
+  description: "Meat is needed for processing."
+  difficulty: Iron
+  targets:
+  - id: N14FoodMeatRadRaw
+    required: { min: 5, max: 10 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 120 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron
+
+- type: storeContract
+  id: caravan_contract_N14Scrap1
+  name: "Scrap Metal Collection"
+  description: "Scrap metal is needed for smelting."
+  difficulty: Bronze
+  targets:
+  - id: N14Scrap1
+    required: { min: 15, max: 30 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 150 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14Scraps
+  name: "Non-ferrous Metal Collection"
+  description: "Scrap metal is needed for smelting."
+  difficulty: Bronze
+  targetCount: 1
+  targets:
+  - id: N14ScrapCopper1
+    required: { min: 5, max: 10 }
+    weight: 60
+  - id: N14ScrapBrass1
+    required: { min: 5, max: 10 }
+    weight: 60
+  - id: N14ScrapLead1
+    required: { min: 5, max: 10 }
+    weight: 60
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 120}
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14Weapon9mm
+  name: "Need a Gun"
+  description: "A gun for the bar guard."
+  difficulty: Iron
+  targetCount: 1
+  targets:
+  - id: N14WeaponPistol9mm
+    required: 1
+    weight: 60
+  - id: N14WeaponRevolver9mm
+    required: 1
+    weight: 60
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 50, max: 75 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron_nonweapons
+
+- type: storeContract
+  id: caravan_contract_N14MaterialLeather1
+  name: "Leather Collection"
+  description: "Leather is needed for the tanner."
+  difficulty: Iron
+  targets:
+  - id: N14MaterialLeather1
+    required: { min: 5, max: 15 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 80, max: 120 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron
+
+- type: storeContract
+  id: caravan_contract_N14MobGhoulFeral
+  name: "Ghouls"
+  description: "Dead ghoul bodies are needed for experiments."
+  difficulty: Silver
+  targets:
+  - id: N14MobGhoulFeral
+    required: { min: 2, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 150, max: 250 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14MobRaiderPsycho
+  name: "Raiders"
+  description: "I'm sick of them. Kill a couple and bring the bodies."
+  difficulty: Silver
+  targets:
+  - id: N14BaseMobRaider # Misfits Fix — accept any raider variant (abstract = auto-Descendants)
+    required: { min: 2, max: 5 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 150, max: 250}
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14DrinkNukaCola
+  name: "Nuka-Cola"
+  description: "I'm missing one Nuka-Cola for my collection."
+  difficulty: Silver
+  targetCount: 1
+  targets:
+  - id: N14DrinkNukaColaCherry
+    required: 1
+    weight: 60
+  - id: N14DrinkNukaCola
+    required: 1
+    weight: 60
+  - id: N14DrinkNukaColaOrange
+    required: 1
+    weight: 60
+  - id: N14DrinkNukaColaGrape
+    required: 1
+    weight: 60
+  - id: N14DrinkNukaColaWild
+    required: 1
+    weight: 60
+  - id: N14DrinkNukaColaYellow
+    required: 1
+    weight: 60
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 200 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14FloraProduceWildCarrot
+  name: "Carrots!!!"
+  description: "I love carrots! I need lots of carrots!"
+  difficulty: Iron
+  targets:
+  - id: N14FloraProduceWildCarrot
+    required: { min: 5, max: 10 }
+    weight: 60
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 150 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron
+
+- type: storeContract
+  id: caravan_contract_N14BrassKnife
+  name: "Knife"
+  description: "I'm looking for new knives for my collection."
+  difficulty: Iron
+  targets:
+  - id: N14BrassKnife
+    required: { min: 1, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 175 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron_nonweapons
+
+- type: storeContract
+  id: caravan_contract_N14FloraProduceWildCaveFungusRad
+  name: "Mushrooms!"
+  description: "I need mushrooms. Yes, purely for scientific purposes."
+  difficulty: Iron
+  targets:
+  - id: N14FloraProduceWildCaveFungusRad
+    required: { min: 3, max: 6 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 120, max: 150 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron
+
+- type: storeContract
+  id: caravan_contract_N14MobDeathclaw
+  name: "Deathclaw!"
+  description: "Find and kill the beast. Bring it to me."
+  difficulty: Mithril
+  targets:
+  - id: N14MobDeathclaw
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 600, max: 1000 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_mithril
+
+- type: storeContract
+  id: caravan_contract_N14MobRaiderBoss
+  name: "Raider Boss"
+  description: "He has annoyed everyone. He roams too much. Kill him."
+  difficulty: Gold
+  targets:
+  - id: N14MobEnforcerWarden
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 600, max: 1000 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold
+
+- type: storeContract
+  id: caravan_contract_N14MobCazador
+  name: "Cazador"
+  description: "Bring back the cazador bodies."
+  difficulty: Gold
+  targets:
+  - id: N14MobCazador
+    required: 3
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 600, max: 1000 }
+  - type: Pool
+    amount: { min: 3, max: 5 }
+    options:
+    - type: Pool
+      id: caravan_gold
+
+- type: storeContract
+  id: caravan_contract_N14SuperSledgeHammer
+  name: "Hammer"
+  description: "A hammer for a connoisseur."
+  difficulty: Gold
+  targets:
+  - id: N14SuperSledgeHammer
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 250, max: 500 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold_nonweapons
+# Misfits Add — new contracts: tier Diamond+
+
+- type: storeContract
+  id: caravan_contract_N14MobDeathclawMetal
+  name: "The Armored One"
+  description: "I heard one lives with armor. Very old and dangerous. Only the best hunters need apply."
+  difficulty: Diamond
+  targets:
+  - id: N14MobDeathclawMetal
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 600, max: 1000 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_diamond
+
+# - type: storeContract -removed, see above
+  # id: caravan_contract_N14CookedFoodEggDeathclawBoiled
+  # name: "Deathclaw Delicacy"
+  # description: "A gourmet with peculiar taste urgently needs a boiled deathclaw egg. Good luck sourcing one."
+  # difficulty: Mithril
+  # targets:
+  # - id: N14CookedFoodEggDeathclawBoiled
+    # required: 1
+  # rewards:
+  # - type: Currency
+    # id: Caps
+    # amount: { min: 600, max: 1000 }
+  # - type: Pool
+    # amount: { min: 1, max: 3 }
+    # options:
+    # - type: Pool
+      # id: caravan_mithril
+
+# Misfits Add — new Easy contracts
+- type: storeContract
+  id: caravan_contract_N14FoodCannedFish
+  name: "Canned Fish"
+  description: "Tinned goods keep well on long journeys. Bring a few cans."
+  difficulty: Bronze
+  targets:
+  - id: N14FoodCannedFish
+    required: { min: 5, max: 10 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 60, max: 100 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+- type: storeContract
+  id: caravan_contract_N14FoodEggChicken
+  name: "Fresh Eggs"
+  description: "Hard to find these days. Bring what you can."
+  difficulty: Bronze
+  targets:
+  - id: N14FoodEggChicken
+    required: { min: 5, max: 8 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 60, max: 90 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_bronze
+
+# - type: storeContract - removed, unmapped -pierow
+  # id: caravan_contract_N14MobJackal
+  # name: "Jackal Pack"
+  # description: "Those damn jackals are harassing the locals. Come back with proof you cleared them out."
+  # difficulty: Iron
+  # targets:
+  # - id: N14MobJackal
+    # required: { min: 3, max: 6 }
+  # rewards:
+  # - type: Currency
+    # id: Caps
+    # amount: { min: 80, max: 120 }
+  # - type: Pool
+    # amount: { min: 1, max: 3 }
+    # options:
+    # - type: Pool
+      # id: caravan_iron
+
+- type: storeContract
+  id: caravan_contract_N14Whip
+  name: "A Proper Whip"
+  description: "A collector is looking for a well-made whip."
+  difficulty: Iron
+  targets:
+  - id: N14Whip
+    required: { min: 1, max: 2 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 80, max: 120 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_iron_nonweapons
+
+# Misfits Add — new Medium contracts
+- type: storeContract
+  id: caravan_contract_N14MobRadscorpion
+  name: "Radscorpion Culling"
+  description: "These things are nesting too close to the settlement. Clear a few out."
+  difficulty: Silver
+  targets:
+  - id: N14MobRadscorpion
+    required: { min: 2, max: 4 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 150, max: 250 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14MobMirelurk
+  name: "Mirelurk Hunt"
+  description: "Mirelurks near the water source need to go. Bring back the bodies."
+  difficulty: Silver
+  targets:
+  - id: N14MobMirelurk
+    required: { min: 1, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 150, max: 250 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14WeaponRifleAk112
+  name: "AK-112 Rifles"
+  description: "The militia needs reliable service rifles. Pre-war AK-112s preferred."
+  difficulty: Silver
+  targets:
+  - id: N14WeaponRifleAk112
+    required: { min: 1, max: 2 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 150, max: 225 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver_nonweapons
+
+- type: storeContract
+  id: caravan_contract_N14ClothingLegionReconArmor
+  name: "Legion Recon Armor"
+  description: "A trader wants Legion equipment. Don't ask why."
+  difficulty: Silver
+  targets:
+  - id: N14ClothingLegionReconArmor
+    required: { min: 1, max: 2 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 175, max: 275 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver
+
+- type: storeContract
+  id: caravan_contract_N14PilumSpear
+  name: "Pilum Spears"
+  description: "A collector of Legion artifacts is paying well for these."
+  difficulty: Silver
+  targets:
+  - id: N14PilumSpear
+    required: { min: 1, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 100, max: 175 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_silver_nonweapons
+
+# # Misfits Add — new Hard contracts
+# - type: storeContract -removed, see above
+  # id: caravan_contract_N14MobDeathclawicy
+  # name: "Icy Deathclaw"
+  # description: "A pale terror has been spotted north. Kill it and bring proof."
+  # difficulty: Mithril
+  # targets:
+  # - id: N14MobDeathclawicy
+    # required: 1
+  # rewards:
+  # - type: Currency
+    # id: Caps
+    # amount: { min: 600, max: 1000 }
+  # - type: Pool
+    # amount: { min: 1, max: 3 }
+    # options:
+    # - type: Pool
+      # id: caravan_mithril
+
+- type: storeContract
+  id: caravan_contract_N14MobRadMirelurk
+  name: "Irradiated Mirelurks"
+  description: "These glowing variants hit harder and take more to put down. Two should do."
+  difficulty: Gold
+  targets:
+  - id: N14MobRadMirelurk
+    required: { min: 2, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 400, max: 750 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold
+
+# Misfits Add — new Gold tier contracts
+
+- type: storeContract
+  id: caravan_contract_N14Gladius
+  name: "Legion Blades"
+  description: "A collector of pre-war and Legion weapons wants gladii. Bring two or three."
+  difficulty: Gold
+  targets:
+  - id: N14Gladius
+    required: { min: 2, max: 3 }
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 300, max: 500 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold_nonweapons
+
+# - type: storeContract -removed, see above
+  # id: caravan_contract_N14WeaponLaserRifleYk42b
+  # name: "Laser Technology"
+  # description: "Pre-war energy weapons are in high demand. Bring us a YK-42b laser rifle."
+  # difficulty: Gold
+  # targets:
+  # - id: N14WeaponLaserRifleYk42b
+    # required: 1
+  # rewards:
+  # - type: Currency
+    # id: Caps
+    # amount: { min: 400, max: 650 }
+  # - type: Pool
+    # amount: { min: 1, max: 3 }
+    # options:
+    # - type: Pool
+      # id: caravan_gold_nonweapons
+
+- type: storeContract
+  id: caravan_contract_N14VeteranLegionArmor
+  name: "Veteran Legion Armor"
+  description: "High-quality Legion craftsmanship. Strip it off a veteran and bring it here."
+  difficulty: Gold
+  targets:
+  - id: N14ClothingOuterDeanLegionnaireVeteranArmor
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 350, max: 600 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold
+
+# Misfits Add — new Mithril tier contract
+
+# - type: storeContract -this is just broke and never works. better off not having it tbh -pierow
+  # id: caravan_contract_N14MobCazador
+  # name: "Cazador Nest"
+  # description: "A full cazador nest has been spotted. We need five dead to clear it properly."
+  # difficulty: Mithril
+  # targets:
+  # - id: N14MobCazador
+    # required: 5
+  # rewards:
+  # - type: Currency
+    # id: Caps
+    # amount: { min: 800, max: 1200 }
+  # - type: Pool
+    # amount: { min: 2, max: 4 }
+    # options:
+    # - type: Pool
+      # id: caravan_mithril
+
+# Misfits Add — new Diamond tier contracts
+
+- type: storeContract
+  id: caravan_contract_N14MobDeathclawGrandHunt
+  name: "The Grand Hunt"
+  description: "Kill two full-grown deathclaws and bring the bodies. Only the most hardened hunters survive this."
+  difficulty: Diamond
+  targets:
+  - id: N14MobDeathclaw
+    required: 2
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 1200, max: 2000 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_diamond
+
+- type: storeContract
+  id: caravan_contract_N14WeaponPlasmaRifleDelivery
+  name: "Pre-War Science"
+  description: "A researcher is paying a fortune for a functional plasma rifle in working condition. Don't ask what they need it for."
+  difficulty: Diamond
+  targets:
+  - id: N14WeaponPlasmaRifleUrban
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 1000, max: 1800 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_diamond
+
+#Misfits Add - more contracts to compensate for the ones removes and then some ---pierow
+- type: storeContract
+  id: caravan_contract_N14VaultPDA
+  name: "Vault Science"
+  description: "A researcher is paying a fortune for a couple of functional pipboys. Specifically, from Vault 14; no others will suffice. Don't ask what they need it for."
+  difficulty: Diamond
+  targets:
+  - id: N14VaultPDA
+    required: 2
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 1500, max: 2000 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_diamond
+
+- type: storeContract
+  id: caravan_contract_N14ChineseSword
+  name: "Black Maarket Dealings"
+  description: "The Ghoul Liberation Army is looking to restock their arsenal. Think you can turn a blind eye?"
+  difficulty: Gold
+  targets:
+  - id: N14ChineseSword
+    required: 3
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 700, max: 1200 }
+  - type: Pool
+    amount: { min: 1, max: 3 }
+    options:
+    - type: Pool
+      id: caravan_gold
+
+- type: storeContract
+  id: caravan_contract_N14HolotapeQuestGECK
+  name: "REDACTED"
+  description: "A client named J████ F██████ is requesting a copy of the GECK on a holotape. What in tarnation is a GECK...?"
+  difficulty: Mithril
+  targets:
+  - id: N14HolotapeQuestGECK
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 1800, max: 2500 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_mithril
+
+- type: storeContract
+  id: caravan_contract_N14HolotapeEnclave
+  name: "REDACTED"
+  description: "Someone claiming they're from the United States Secret Service asked for this holotape. No questions asked."
+  difficulty: Diamond
+  targets:
+  - id: N14HolotapeEnclave
+    required: 1
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 2000, max: 2700 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_diamond
+
+- type: storeContract
+  id: caravan_contract_N14CurrencyPrewar
+  name: "Currency Exchange"
+  description: "These vaulties keep boasting it has value. Perhaps we should invest?"
+  difficulty: Mithril
+  targets:
+  - id: N14CurrencyPrewar
+    required: 1000
+  rewards:
+  - type: Currency
+    id: Caps
+    amount: { min: 600, max: 1100 }
+  - type: Pool
+    amount: { min: 2, max: 4 }
+    options:
+    - type: Pool
+      id: caravan_mithril
+

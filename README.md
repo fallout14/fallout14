@@ -8,7 +8,7 @@ Here is the translation with the original Markdown formatting preserved:
 
 Fallout 14 builds on the foundation of Nuclear 14 and the upstream Einstein Engines repository, utilizing:
 
-- Assets from various Fallout13 (F13/SS13) builds — Desert Rose 2, Lone Star, and more
+- Assets from various Fallout13 (F13/SS13) builds -- Desert Rose 2, Lone Star, and more
 - Unique materials created by the community
 - A highly modular system from Einstein Engines
 

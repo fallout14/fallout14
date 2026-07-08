@@ -1,80 +1,76 @@
 Here is the translation with the original Markdown formatting preserved:
 
-# Nuclear 14 / Misfits: Nuclear Wasteland
+# Fallout 14
 
-**Misfits: Nuclear Wasteland** is a english fork of the first Russian-language adaptation of the original **Nuclear 14** fork, created by Peptide90 in 2022 with contributions from the community. The project combines the best Fallout-themed developments with the capabilities of the Space Station 14 engine.
+**Fallout 14** is a sidestream fork of **[Nuclear 14](https://github.com/Misfit-Sanctuary/nuclear-14)** — the first Fallout-themed fork for Space Station 14, originally created by Peptide90 in 2022 with contributions from the community. While Nuclear 14 / Misfits continues along its own trajectory, Fallout 14 explores a different direction with expanded systems, rebalanced gameplay, and a distinct vision for the wasteland.
 
 ## About the Project
 
-Nuclear 14 is the first Fallout fork for Space Station 14, utilizing:
+Fallout 14 builds on the foundation of Nuclear 14 and the upstream Einstein Engines repository, utilizing:
 
-* Assets from various Fallout13 (F13/SS13) builds. Desert Rose 2, Lone Star, etc.
-* Unique materials created by the community
-* A highly modular system from the upstream Einstein Engines repository
+- Assets from various Fallout13 (F13/SS13) builds — Desert Rose 2, Lone Star, and more
+- Unique materials created by the community
+- A highly modular system from Einstein Engines
 
 The theme and locations differ from classic F13, offering players a new experience. The codebase is licensed under AGPLv3, which allows for free use and development of the project.
 
-## Features of the Russian Version
+## Features
 
-Misfits: Nuclear Wasteland adds:
+Fallout 14 adds:
 
-* Full interface and content localization to English.
-* Regular updates and support
+- Expanded and rebalanced gameplay systems distinct from upstream
+- Regular updates and active development
+- A unique take on the Fallout wasteland experience
 
 To participate in development, join our [Discord](https://discord.gg/yXsJnq3FbU).
 
 ## Links
 
-* [Discord](https://discord.gg/yXsJnq3FbU) (official community)
-* Game servers: via launcher (`tbd`) or in Discord
+- [Discord](https://discord.gg/yXsJnq3FbU) (official community)
+- Game servers: via launcher (`tbd`) or in Discord
 
 ## Building
 
 ### Requirements
 
-* Git
-* .NET SDK 10.0.101
+- Git
+- .NET SDK 10.0.101
 
 ### Windows
 
 1. Clone the repository:
-```sh
-git clone https://github.com/Misfit-Sanctuary/nuclear-14.git
 
 ```
+git clone https://github.com/fallout14/fallout14.git
+```
 
+1. Initialize submodules:
 
-2. Initialize submodules:
-```sh
+```
 git submodule update --init --recursive
-
 ```
 
+1. Build the project:
 
-3. Build the project:
-```sh
+```
 Scripts/bat/buildAllDebug.bat
-
 ```
 
+1. Run client and server:
 
-4. Run client and server:
-```sh
+```
 Scripts/bat/runQuickAll.bat
-
 ```
 
-
-5. Connect to localhost via the client
+1. Connect to localhost via the client
 
 ### Linux
 
 Similar to Windows, but use the `.sh` scripts:
 
-```sh
+```
 Scripts/sh/buildAllDebug.sh
 Scripts/sh/runQuickAll.sh
-
 ```
 
 ### MacOS
@@ -83,11 +79,9 @@ Theoretically similar to Linux, but has not been tested
 
 ## License
 
-Detailed information about code and asset licensing is available in [LEGAL.md](https://www.google.com/search?q=./LEGAL.md). Key provisions:
+Detailed information about code and asset licensing is available in [LEGAL.md](./LEGAL.md). Key provisions:
 
-* Code: AGPLv3
-* Assets: individual licenses (check meta.json)
-* Copyright compliance is mandatory
-
----
+- Code: AGPLv3
+- Assets: individual licenses (check meta.json)
+- Copyright compliance is mandatory
 

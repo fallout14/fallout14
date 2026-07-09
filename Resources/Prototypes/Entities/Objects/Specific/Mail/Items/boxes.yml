@@ -1,6 +1,32 @@
 # Mail-only boxes. If/when something uses these outside of the mail, move the entry into Catalog/Fills.
 
 - type: entity
+  parent: BoxCardboard
+  id: BoxHug
+  name: box of hugs
+  description: A special box for sensitive people.
+  suffix: Emergency
+  components:
+  - type: Sprite
+    layers:
+    - state: box_hug
+    - state: heart
+  - type: Item
+    heldPrefix: hug
+  - type: StorageFill
+    contents:
+    - id: ClothingMaskBreath
+    - id: EmergencyFunnyOxygenTankFilled
+    - id: EmergencyMedipen
+    - id: Flare
+    - id: FoodSnackNutribrick
+    - id: DrinkWaterBottleFull
+  - type: Tag
+    tags:
+    - BoxCardboard
+    - BoxHug
+
+- type: entity
   name: scented soap sampler pack
   parent: BoxCardboard
   id: BoxSoapsAssorted

@@ -1,4 +1,58 @@
 - type: entity
+  parent: BoxBase
+  id: BoxCardboard
+  name: cardboard box
+  description: A cardboard box for storing things.
+  components:
+  - type: Construction
+    graph: BoxCardboard
+    node: boxcardboard
+    containers:
+      - storagebase
+  - type: PhysicalComposition
+    materialComposition:
+      Cardboard: 100
+  - type: Sprite
+    state: box
+  - type: Tag
+    tags:
+    - BoxCardboard
+
+- type: entity
+  name: PDA box
+  parent: BoxCardboard
+  id: BoxPDA
+  description: A box of spare PDA microcomputers.
+  components:
+  - type: StorageFill
+    contents:
+      - id: PassengerPDA
+        amount: 4
+  - type: Sprite
+    layers:
+      - state: box
+      - state: pda
+
+- type: entity
+  name: passenger encryption key box
+  parent: BoxCardboard
+  id: BoxEncryptionKeyPassenger
+  description: A box of spare encryption keys.
+  components:
+  - type: StorageFill
+    contents:
+      - id: EncryptionKeyCommon
+        amount: 4
+  - type: Sprite
+    layers:
+      - state: box
+      - state: encryptokey
+  - type: Storage
+    whitelist:
+      components:
+      - EncryptionKey
+
+- type: entity
   name: Prisoner encryption key box
   parent: BoxCardboard
   id: BoxEncryptionKeyPrisoner

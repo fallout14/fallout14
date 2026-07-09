@@ -1,26 +1,38 @@
 [
   {
-    "role": "PLACEHOLDER_MANAGEMENT",
+    "role": "1522232262421254144",
     "title": "Management",
     "color": "#ff4444",
     "priority": 100
   },
   {
-    "role": "PLACEHOLDER_SENIOR_ADMIN",
-    "title": "Senior Administrator",
+    "role": "1522118659080720384",
+    "title": "Server Administrator",
     "color": "#ff6b6b",
-    "priority": 75
+    "priority": 80
   },
   {
-    "role": "PLACEHOLDER_ADMIN",
+    "role": "1522242182814109817",
     "title": "Administrator",
     "color": "#ff9999",
-    "priority": 50
+    "priority": 60
   },
   {
-    "role": "PLACEHOLDER_TRIAL_ADMIN",
+    "role": "1522991533337346129",
     "title": "Trial Administrator",
     "color": "#ffcccc",
-    "priority": 25
+    "priority": 40
+  },
+  {
+    "role": "1522991571564367993",
+    "title": "Moderator",
+    "color": "#a8d8a8",
+    "priority": 20
+  },
+  {
+    "role": "1524888121068617870",
+    "title": "Wastelander",
+    "color": "#8b7355",
+    "priority": 10
   }
 ]

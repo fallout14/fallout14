@@ -20,8 +20,8 @@ public sealed class ParallaxControl : Control
 
     [ViewVariables(VVAccess.ReadWrite)] public Vector2 Offset { get; set; }
 
-    private const float FramesPerSecond = 6f;
-    private const float CycleDuration = 25f; // seconds per theme
+    private const float FramesPerSecond = 2f;
+    private const float CycleDuration = 26f; // seconds per theme (~52 frames / 2fps)
 
     private readonly List<Texture>[] _themeFrames = new List<Texture>[2];
     private int _currentTheme;
@@ -34,8 +34,8 @@ public sealed class ParallaxControl : Control
         Offset = new Vector2(_random.Next(0, 1000), _random.Next(0, 1000));
         RectClipContent = true;
 
-        LoadFrames(0, "/Textures/Parallaxes/brotherhood/", 156);
-        LoadFrames(1, "/Textures/Parallaxes/vetranger/", 163);
+        LoadFrames(0, "/Textures/Parallaxes/brotherhood/", 52);
+        LoadFrames(1, "/Textures/Parallaxes/vetranger/", 55);
 
         _currentTheme = _random.Next(0, 2);
         _cycleStartTime = (float)_timing.RealTime.TotalSeconds;

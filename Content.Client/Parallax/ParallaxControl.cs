@@ -20,8 +20,8 @@ public sealed class ParallaxControl : Control
 
     [ViewVariables(VVAccess.ReadWrite)] public Vector2 Offset { get; set; }
 
-    private const float FramesPerSecond = 2f;
-    private const float CycleDuration = 26f; // seconds per theme (~52 frames / 2fps)
+    private const float FramesPerSecond = 6f;
+    private const float CycleDuration = 26f; // seconds per theme
 
     private readonly List<Texture>[] _themeFrames = new List<Texture>[2];
     private int _currentTheme;
@@ -46,7 +46,7 @@ public sealed class ParallaxControl : Control
         _themeFrames[themeIdx] = new List<Texture>();
         for (var i = 0; i < count; i++)
         {
-            var path = $"{dir}{i:D4}.png";
+            var path = $"{dir}{i:D4}.jpg";
             if (_resCache.TryGetResource<TextureResource>(path, out var texRes))
                 _themeFrames[themeIdx].Add(texRes.Texture);
             else

@@ -7124,7 +7124,7 @@ entities:
       rot: -1.5707963267948966 rad
       pos: 25.5,44.5
       parent: 588
-- proto: ClosetWallMaintenanceFilledRandom
+- proto: N14LootClosetWallMedicabinet
   entities:
   - uid: 499
     components:
@@ -8477,7 +8477,7 @@ entities:
       rot: -1.5707963267948966 rad
       pos: 10.765976,19.912766
       parent: 588
-- proto: LockerBoozeFilled
+- proto: N14LootClosetFridge
   entities:
   - uid: 1028
     components:

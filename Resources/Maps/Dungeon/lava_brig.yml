@@ -3229,14 +3229,14 @@ entities:
     - type: Transform
       pos: 12.356534,44.605965
       parent: 588
-- proto: BoxSterileMask
+- proto: N14BoxPlasticFilledWastelander
   entities:
   - uid: 1477
     components:
     - type: Transform
       pos: 12.683106,44.705303
       parent: 588
-- proto: BriefcaseBrownFilled
+- proto: N14BoxPlasticFilledWastelander
   entities:
   - uid: 325
     components:
@@ -7148,7 +7148,7 @@ entities:
     - type: Transform
       pos: 7.4719925,36.539555
       parent: 588
-- proto: ClosetBombFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 413
     components:
@@ -7165,7 +7165,7 @@ entities:
     - type: Transform
       pos: 16.5,27.5
       parent: 588
-- proto: ClosetEmergencyFilledRandom
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 1203
     components:
@@ -7187,7 +7187,7 @@ entities:
     - type: Transform
       pos: 1.5,7.5
       parent: 588
-- proto: ClosetFireFilled
+- proto: N14LootGenericClosetGrey2
   entities:
   - uid: 1194
     components:
@@ -7209,21 +7209,21 @@ entities:
     - type: Transform
       pos: 0.5,38.5
       parent: 588
-- proto: ClosetL3SecurityFilled
+- proto: N14LootClosetGunCabinet
   entities:
   - uid: 415
     components:
     - type: Transform
       pos: 20.5,10.5
       parent: 588
-- proto: ClosetToolFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 1007
     components:
     - type: Transform
       pos: 14.5,30.5
       parent: 588
-- proto: ClosetWallMaintenanceFilledRandom
+- proto: N14LootClosetWallMedicabinet
   entities:
   - uid: 499
     components:
@@ -7357,7 +7357,7 @@ entities:
     - type: Transform
       pos: 27.40101,3.677678
       parent: 588
-- proto: ClothingShoesBootsCombatFilled
+- proto: N14ClothingBootsCombatFilled
   entities:
   - uid: 1036
     components:
@@ -7480,28 +7480,28 @@ entities:
     - type: Transform
       pos: 22.5,36.5
       parent: 588
-- proto: CrateEngineeringGear
+- proto: N14CrateBreakPlainFilledMechanicParts
   entities:
   - uid: 1008
     components:
     - type: Transform
       pos: 26.5,30.5
       parent: 588
-- proto: CrateFunBoardGames
+- proto: N14CrateBreakPlainFilledDice
   entities:
   - uid: 1845
     components:
     - type: Transform
       pos: 26.5,48.5
       parent: 588
-- proto: CrateFunParty
+- proto: N14CrateBreakPlainFilledWhisky
   entities:
   - uid: 1876
     components:
     - type: Transform
       pos: 25.5,43.5
       parent: 588
-- proto: CrateHydroponicsSeedsExotic
+- proto: N14CrateBreakPlainFilledCigarettes
   entities:
   - uid: 1660
     components:
@@ -9006,14 +9006,14 @@ entities:
     - type: Transform
       pos: 16.5,22.5
       parent: 588
-- proto: LockerMedicineFilled
+- proto: N14LootClosetWallMedicabinet
   entities:
   - uid: 1152
     components:
     - type: Transform
       pos: 28.5,27.5
       parent: 588
-- proto: LockerSecurityFilled
+- proto: N14LootClosetGunCabinet
   entities:
   - uid: 416
     components:
@@ -9131,14 +9131,14 @@ entities:
     - type: Transform
       pos: 28.5,25.5
       parent: 588
-- proto: MedkitAdvancedFilled
+- proto: N14MedkitFilled
   entities:
   - uid: 1153
     components:
     - type: Transform
       pos: 30.614443,28.392822
       parent: 588
-- proto: MedkitCombatFilled
+- proto: N14MedkitCombatFilled
   entities:
   - uid: 1154
     components:
@@ -11096,7 +11096,7 @@ entities:
     - type: Transform
       pos: 13.5,43.5
       parent: 588
-- proto: StimkitFilled
+- proto: N14MedkitStimkitFilled
   entities:
   - uid: 561
     components:
@@ -12224,7 +12224,7 @@ entities:
     - type: Transform
       pos: 9.5,12.5
       parent: 588
-- proto: WardrobePrisonFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 297
     components:

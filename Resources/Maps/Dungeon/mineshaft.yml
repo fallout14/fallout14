@@ -506,7 +506,7 @@ entities:
     - type: Transform
       pos: 15.5,34.5
       parent: 2
-- proto: BookshelfFilled
+- proto: N14Bookshelf
   entities:
   - uid: 110
     components:
@@ -1642,7 +1642,7 @@ entities:
     - type: Transform
       pos: 28.687122,30.357244
       parent: 2
-- proto: ClosetMaintenanceFilledRandom
+- proto: N14LootGenericClosetRusty
   entities:
   - uid: 453
     components:
@@ -3186,7 +3186,7 @@ entities:
     - type: Transform
       pos: 2.5,25.5
       parent: 2
-- proto: LockerSalvageSpecialistFilled
+- proto: N14LootGenericClosetRusty
   entities:
   - uid: 108
     components:
@@ -3334,14 +3334,14 @@ entities:
     - type: Transform
       pos: 13.508261,21.99531
       parent: 2
-- proto: MedkitAdvancedFilled
+- proto: N14MedkitFilled
   entities:
   - uid: 455
     components:
     - type: Transform
       pos: 19.449413,19.468704
       parent: 2
-- proto: MedkitFilled
+- proto: N14MedkitFilled
   entities:
   - uid: 457
     components:
@@ -4637,14 +4637,14 @@ entities:
     - type: Transform
       pos: 17.5,27.5
       parent: 2
-- proto: ToolboxArtisticFilled
+- proto: N14ToolboxFilled2
   entities:
   - uid: 623
     components:
     - type: Transform
       pos: 39.425648,20.705383
       parent: 2
-- proto: ToolboxElectricalFilled
+- proto: N14ToolboxFilled1
   entities:
   - uid: 684
     components:

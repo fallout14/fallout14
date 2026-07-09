@@ -2540,7 +2540,7 @@ entities:
     - type: Transform
       pos: 32.5,30.5
       parent: 1653
-- proto: BoxBeaker
+- proto: N14BoxPlasticFilledWastelander
   entities:
   - uid: 1484
     components:
@@ -6164,14 +6164,14 @@ entities:
     - type: Transform
       pos: 32.5,16.5
       parent: 1653
-- proto: ClosetBombFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 847
     components:
     - type: Transform
       pos: 20.5,28.5
       parent: 1653
-- proto: ClosetEmergencyFilledRandom
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 470
     components:
@@ -6188,7 +6188,7 @@ entities:
     - type: Transform
       pos: 4.5,22.5
       parent: 1653
-- proto: ClosetFireFilled
+- proto: N14LootGenericClosetGrey2
   entities:
   - uid: 468
     components:
@@ -6205,21 +6205,21 @@ entities:
     - type: Transform
       pos: 3.5,22.5
       parent: 1653
-- proto: ClosetJanitorFilled
+- proto: MisfitsN14ClosetDoubleJanitorial
   entities:
   - uid: 727
     components:
     - type: Transform
       pos: 6.5,27.5
       parent: 1653
-- proto: ClosetL3JanitorFilled
+- proto: MisfitsN14ClosetDoubleJanitorial
   entities:
   - uid: 731
     components:
     - type: Transform
       pos: 4.5,28.5
       parent: 1653
-- proto: ClosetL3ScienceFilled
+- proto: N14LootClosetCabinetWood
   entities:
   - uid: 469
     components:
@@ -6236,7 +6236,7 @@ entities:
     - type: Transform
       pos: 54.5,0.5
       parent: 1653
-- proto: ClosetMaintenanceFilledRandom
+- proto: N14LootGenericClosetRusty
   entities:
   - uid: 745
     components:
@@ -6263,7 +6263,7 @@ entities:
     - type: Transform
       pos: 52.5,0.5
       parent: 1653
-- proto: ClosetRadiationSuitFilled
+- proto: N14LootClosetWallMedicabinet
   entities:
   - uid: 746
     components:
@@ -6275,7 +6275,7 @@ entities:
     - type: Transform
       pos: 30.5,16.5
       parent: 1653
-- proto: ClosetToolFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 584
     components:
@@ -6500,7 +6500,7 @@ entities:
     - type: Transform
       pos: 0.5,44.5
       parent: 1653
-- proto: CrateServiceJanitorialSupplies
+- proto: N14CrateBreakPlainFilledCigarettes
   entities:
   - uid: 728
     components:
@@ -7379,14 +7379,14 @@ entities:
     - type: Transform
       pos: 21.9839,4.619315
       parent: 1653
-- proto: LockerElectricalSuppliesFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 1533
     components:
     - type: Transform
       pos: 27.5,9.5
       parent: 1653
-- proto: LockerScienceFilled
+- proto: N14LootClosetCabinetWood
   entities:
   - uid: 699
     components:
@@ -7418,7 +7418,7 @@ entities:
     - type: Transform
       pos: 30.5,18.5
       parent: 1653
-- proto: LockerWeldingSuppliesFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 1531
     components:
@@ -7697,7 +7697,7 @@ entities:
     - type: Transform
       pos: 34.5,36.5
       parent: 1653
-- proto: PlasmaTankFilled
+- proto: N14OxygenTankFilled
   entities:
   - uid: 1473
     components:
@@ -9846,7 +9846,7 @@ entities:
       rot: -1.5707963267948966 rad
       pos: 4.5,18.5
       parent: 1653
-- proto: ToolboxMechanicalFilled
+- proto: N14ToolboxMechanical
   entities:
   - uid: 1108
     components:
@@ -10337,7 +10337,7 @@ entities:
     - type: Transform
       pos: 34.5,16.5
       parent: 1653
-- proto: WardrobeMixedFilled
+- proto: N14LootGenericClosetDouble
   entities:
   - uid: 1257
     components:

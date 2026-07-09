@@ -8224,7 +8224,7 @@ entities:
     - type: Transform
       pos: 28.58071,26.140953
       parent: 1653
-- proto: LockerAtmosphericsFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 2554
     components:
@@ -8236,7 +8236,7 @@ entities:
     - type: Transform
       pos: 53.5,32.5
       parent: 1653
-- proto: LockerBotanistLoot
+- proto: N14LootClosetCabinetWood
   entities:
   - uid: 1601
     components:
@@ -8272,7 +8272,7 @@ entities:
     - type: Transform
       pos: 32.5,38.5
       parent: 1653
-- proto: LockerQuarterMasterFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 1346
     components:

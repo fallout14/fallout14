@@ -7864,7 +7864,7 @@ entities:
     - type: Transform
       pos: 7.4719925,36.539555
       parent: 1
-- proto: ClosetWallMaintenanceFilledRandom
+- proto: N14LootClosetWallMedicabinet
   entities:
   - uid: 499
     components:
@@ -7888,7 +7888,7 @@ entities:
     - type: Transform
       pos: 21.5,43.5
       parent: 1
-- proto: ClothingBeltUtilityFilled
+- proto: N14ClothingBeltUtilityFilled
   entities:
   - uid: 848
     components:
@@ -8238,7 +8238,7 @@ entities:
     - type: Transform
       pos: 9.446474,3.4718008
       parent: 1
-- proto: CrateEngineeringGear
+- proto: N14CrateBreakPlainFilledMechanicParts
   entities:
   - uid: 1003
     components:
@@ -9202,7 +9202,7 @@ entities:
     - type: Transform
       pos: 7.5287867,36.397644
       parent: 1
-- proto: LockerChiefEngineerFilled
+- proto: N14LootGenericClosetGrey1
   entities:
   - uid: 366
     components:

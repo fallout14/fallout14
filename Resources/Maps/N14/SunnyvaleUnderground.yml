@@ -17698,7 +17698,7 @@ entities:
     - type: Transform
       pos: -57.5,32.5
       parent: 2
-- proto: BoxBeaker
+- proto: N14BoxPlasticFilledWastelander
   entities:
   - uid: 118
     components:
@@ -17817,7 +17817,7 @@ entities:
     - type: Transform
       pos: -25.574902,-1.1652516
       parent: 2
-- proto: BriefcaseBrownFilled
+- proto: N14BoxPlasticFilledWastelander
   entities:
   - uid: 134
     components:
@@ -60275,7 +60275,7 @@ entities:
     - type: Transform
       pos: -61.5,21.5
       parent: 2
-- proto: CrateFunBoardGames
+- proto: N14CrateBreakPlainFilledDice
   entities:
   - uid: 2223
     components:
@@ -142769,7 +142769,7 @@ entities:
     - type: Transform
       pos: -120.56585,-23.328028
       parent: 2
-- proto: ToolboxMechanicalFilled
+- proto: N14ToolboxMechanical
   entities:
   - uid: 41002
     components:

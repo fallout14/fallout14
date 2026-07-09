@@ -20,7 +20,7 @@ public sealed class ParallaxControl : Control
 
     [ViewVariables(VVAccess.ReadWrite)] public Vector2 Offset { get; set; }
 
-    private const float FramesPerSecond = 24f;
+    private const float FramesPerSecond = 15f;
     private const float CycleDuration = 26f; // seconds per theme
 
     private readonly List<Texture>[] _themeFrames = new List<Texture>[2];

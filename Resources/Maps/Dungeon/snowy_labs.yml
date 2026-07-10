@@ -10905,7 +10905,7 @@ entities:
     - type: Transform
       pos: 33.566967,20.5998
       parent: 1653
-- proto: N14OxygenTankFilled
+- proto: OxygenTankFilled
   entities:
   - uid: 1473
     components:

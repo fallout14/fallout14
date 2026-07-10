@@ -27,7 +27,8 @@ game-ticker-no-map-selected = [color=yellow]Map not yet selected![/color]
 game-ticker-unknown-map-author = Unknown
 game-ticker-player-no-jobs-available-when-joining = When attempting to join to the game, no jobs were available.
 # #Cythisiax Edited - Changed from Utah to California (Sunnyvale is in CA)
-game-ticker-welcome-to-the-station = You wake up somewhere in the California wasteland.
+# #Cythisiax Edited - Changed from Utah to Northern California (Sunnyvale is in NorCal)
+game-ticker-welcome-to-the-station = You wake up somewhere in the Northern California wasteland.
 
 # Displayed in chat to admins when a player joins
 player-join-message = Player {$name} joined.

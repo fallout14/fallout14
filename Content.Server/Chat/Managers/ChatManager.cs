@@ -200,6 +200,30 @@ namespace Content.Server.Chat.Managers
             _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Hook OOC from {sender}: {message}");
         }
 
+        // #Cythisiax Added - Hook admin chat for Discord bot reverse relay
+        public void SendHookAdminChat(string sender, string message)
+        {
+            var clients = _adminManager.ActiveAdmins
+                .Where(p => _adminManager.GetAdminData(p)?.HasFlag(AdminFlags.Adminchat) == true)
+                .Select(p => p.Channel);
+            var wrappedMessage = Loc.GetString("chat-manager-send-hook-adminchat-wrap-message",
+                                            ("adminChannelName", Loc.GetString("chat-manager-admin-channel-name")),
+                                            ("senderName", sender), ("message", FormattedMessage.EscapeText(message)));
+
+            foreach (var client in clients)
+            {
+                ChatMessageToOne(ChatChannel.AdminChat,
+                    message,
+                    wrappedMessage,
+                    default,
+                    false,
+                    client,
+                    author: null);
+            }
+
+            _adminLogger.Add(LogType.Chat, $"Hook admin chat from {sender}: {message}");
+        }
+
         #endregion
 
         #region Public OOC Chat API

@@ -82,17 +82,32 @@ namespace Content.Server.MoMMI
 
         private async Task<bool> HandleChatPost(IStatusHandlerContext context)
         {
-            if (context.RequestMethod != HttpMethod.Post || context.Url.AbsolutePath != "/ooc")
-            {
+            if (context.RequestMethod != HttpMethod.Post)
                 return false;
+
+            if (context.Url.AbsolutePath == "/ooc")
+            {
+                await HandleOocPost(context);
+                return true;
             }
 
+            if (context.Url.AbsolutePath == "/adminchat")
+            {
+                await HandleAdminChatPost(context);
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task HandleOocPost(IStatusHandlerContext context)
+        {
             var password = _configurationManager.GetCVar(CCVars.StatusMoMMIPassword);
 
             if (string.IsNullOrEmpty(password))
             {
                 await context.RespondErrorAsync(HttpStatusCode.Forbidden);
-                return true;
+                return;
             }
 
             OOCPostMessage? message = null;
@@ -108,13 +123,13 @@ namespace Content.Server.MoMMI
             if (message == null)
             {
                 await context.RespondErrorAsync(HttpStatusCode.BadRequest);
-                return true;
+                return;
             }
 
             if (message.Password != password)
             {
                 await context.RespondErrorAsync(HttpStatusCode.Forbidden);
-                return true;
+                return;
             }
 
             var sender = message.Sender;
@@ -123,7 +138,47 @@ namespace Content.Server.MoMMI
             _taskManager.RunOnMainThread(() => _chatManager.SendHookOOC(sender, contents));
 
             await context.RespondAsync("Success", HttpStatusCode.OK);
-            return true;
+        }
+
+        // #Cythisiax Added - Admin chat endpoint for Discord bot reverse relay
+        private async Task HandleAdminChatPost(IStatusHandlerContext context)
+        {
+            var password = _configurationManager.GetCVar(CCVars.StatusMoMMIPassword);
+
+            if (string.IsNullOrEmpty(password))
+            {
+                await context.RespondErrorAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
+            OOCPostMessage? message = null;
+            try
+            {
+                message = await context.RequestBodyJsonAsync<OOCPostMessage>();
+            }
+            catch (JsonException)
+            {
+                // message null so enters block down below.
+            }
+
+            if (message == null)
+            {
+                await context.RespondErrorAsync(HttpStatusCode.BadRequest);
+                return;
+            }
+
+            if (message.Password != password)
+            {
+                await context.RespondErrorAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
+            var sender = message.Sender;
+            var contents = message.Contents.ReplaceLineEndings(" ");
+
+            _taskManager.RunOnMainThread(() => _chatManager.SendHookAdminChat(sender, contents));
+
+            await context.RespondAsync("Success", HttpStatusCode.OK);
         }
 
         private sealed class MoMMIMessageBase

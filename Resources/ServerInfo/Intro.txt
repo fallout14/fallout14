@@ -1,6 +1,10 @@
-Welcome to Nuclear 14! You've woken up in the wastelands of Wendover, Utah. Try and survive, thrive and have fun (not at the expense of others hopefully).
+Welcome to Misfits: Nuclear Wasteland — an 18+ Heavy Roleplay server set in post-apocalyptic Utah.
 
-Please make sure you understand the server rules (F1) and if you have any questions, consult this guide, other wastelanders or via discord. You can also ask admins for help (ahelp) by hitting the escape key > admin help and typing a message to any online admins. Especially do this if you witness someone breaking rules.
+You've emerged from your vault, crawled out of the ruins, or wandered in from the wastes. Wendover doesn't care who you were — only who you are now. Stay in character, fear death, and remember: the wasteland doesn't pull punches.
 
+Press F1 to read the full server rules before you step outside. This isn't a TDM server — play a character, not a kill count. If someone's breaking rules, use Escape → Admin Help instead of taking it into your own hands.
 
-Instead of intents, we have combat mode. Check controls below for its keybind. You can't attack anybody with it off, so no more hitting yourself with your own crowbar.
+Check the guidebook (F1 → Guidebook) for mechanics, factions, crafting, and survival tips. Our Discord is linked in the lobby — being in the Discord is required to play.
+
+The accept button enables after 30 seconds. Read the rules. We enforce them.
+

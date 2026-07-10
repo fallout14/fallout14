@@ -124,13 +124,17 @@ public sealed partial class DiscordAuthManager : IPostInjectInit
                 return UnauthorizedErrorData();
 
             var discordUuid = await response.Content.ReadFromJsonAsync<DiscordUuidResponse>(cancel);
+            if (discordUuid is null)
+                return EmptyResponseErrorData();
+
+            // #Cythisiax Added - Require guild membership to connect, not just Discord link
+            if (!await CheckGuild(userId, cancel))
+                return NotInGuildErrorData();
+
             await Task.Delay(TimeSpan.FromSeconds(1));
             var roles = await GetRoles(userId);
             if (roles == null)
                 return EmptyResponseErrorRoleData();
-
-            if (discordUuid is null)
-                return EmptyResponseErrorData();
 
             var level = SponsorData.ParseRoles(roles);
             if (level != SponsorLevel.None)

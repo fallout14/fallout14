@@ -5,10 +5,102 @@
         [bold][color=#39ff14]SERVER RULES[/color][/bold]
       </Box>
       <Box Orientation="Horizontal" HorizontalAlignment="Center">
-        [color=#1a8a00]The live rules are maintained on the Misfits wiki.[/color]
+        [color=#ff4444]Misfits: Nuclear Wasteland — HRP | 18+[/color]
+      </Box>
+      <Box Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 4 0 0">
+        [color=#1a8a00]The live rules, faction rules, and ban appeals are on the Misfits wiki.[/color]
       </Box>
       <Box Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-        [textlink="VIEW LIVE SERVER RULES" link="https://wiki.misfitsystems.net/index.php/Rules"]
+        [textlink="VIEW FULL RULES ON WIKI" link="https://wiki.misfitsystems.net/index.php/Rules"]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [color=#1a8a00]=============================================[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]0. THIS IS AN 18+ SERVER[/color][/bold]
+        [color=#c8f0c8]By playing here you confirm you are at least 18. ERP is forbidden in public spaces and over radio — keep it private between consenting players or not at all. Romantic RP falls under the same rule. Don't be a creep.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]1. HEAVY ROLEPLAY (HRP)[/color][/bold]
+        [color=#c8f0c8]All events in-game must be conducted in character. Actions taken OOC are against the rules and not canon to server events. You are your character — play them.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]2. NO RANDOM DEATHMATCH (RDM)[/color][/bold]
+        [color=#c8f0c8]Random killing without RP justification is prohibited. Violence needs a reason — "I felt like it" isn't one. Exceptions: active warzones, raider factions, and players who wander into declared conflict areas. Going OOC to argue about someone's IC actions will not be respected.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]3. NO METAGAMING[/color][/bold]
+        [color=#c8f0c8]Using out-of-game knowledge (Discord, streams, previous lives) to benefit yourself or others in character is prohibited. Your character doesn't know what you know. Meta-ganging (OOC friend groups coordinating IC) is also metagaming.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]4. VALUE YOUR LIFE (NVL)[/color][/bold]
+        [color=#c8f0c8]Fear death. Don't run into active combat that has nothing to do with you. If you're outnumbered, at gunpoint, or in a killbox — surrender. Don't walk into known death zones alone. Chain of command orders are an exception (faction rules still apply). Going OOC to contest someone's IC actions will not be respected under any ruling.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]5. NO POWERGAMING[/color][/bold]
+        [color=#c8f0c8]Don't abuse game mechanics or force another player's character to do something without probable cause. Imprisoned players must be told when they'll be freed or sent through a court system. You're a wastelander, not a superhero — play like it.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]6. NEW LIFE RULE (NLR)[/color][/bold]
+        [color=#c8f0c8]When you die: you do not remember the cause or events leading to your death for 30 minutes. Do not return to the location of your death for 1 hour. Do not share death info with anyone. "I was planning to go there anyway" is never an excuse. You are a new person — act like it.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]7. NO REVENGE RP[/color][/bold]
+        [color=#c8f0c8]Seeking retribution for a dead character with a new character, or going after your killer after respawning, is forbidden. Your new character has no memory of your old one's enemies.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]8. CHARACTER SEPARATION[/color][/bold]
+        [color=#c8f0c8]Keep IC and OOC separate. Don't antagonize people outside the game over in-game events. Don't bring OOC grudges into RP. No matter what happens to your character, it doesn't affect real life — act accordingly. Failure to separate the two will be met with punishment.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]9. IN-CHARACTER COMMUNICATION[/color][/bold]
+        [color=#c8f0c8]All IC events must be communicated in-game. Use LOOC for urgent OOC matters only, and keep it brief. Using Discord or other external methods for IC coordination is forbidden. Ahelp (Escape → Admin Help) to contact staff.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]10. REALISTIC NAMES[/color][/bold]
+        [color=#c8f0c8]No meme names, celebrity names, or joke names. Your character needs a believable wasteland name. Admins will rename without warning. Repeat offenses = ban.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]11. NO DISCRIMINATION[/color][/bold]
+        [color=#c8f0c8]Real-world bigotry — racism, sexism, homophobia, transphobia — zero tolerance. In-character wasteland prejudice (ghouls vs smoothskins, tribal rivalries) is acceptable as long as it's clearly IC and not a cover for real hate.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]12. REPORT — DON'T RETALIATE[/color][/bold]
+        [color=#c8f0c8]If someone breaks a rule against you, ahelp it. Don't take it into your own hands. "They broke the rules first" is not a defense. Let staff handle it. Admin rulings are final — argue on the forums after the round if you disagree.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]13. PUNISHMENT[/color][/bold]
+        [color=#c8f0c8]First offense: Warning. Second: 3-day ban. Third: 1-week ban. Fourth: Permanent ban. Severe violations may skip straight to permaban at staff discretion. Ban appeals go through Discord tickets — taking complaints to public channels gets your appeal denied.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [bold][color=#ff8844]14. FACTION RULES[/color][/bold]
+        [color=#c8f0c8]Faction members are held to the highest RP standards. Chain of command must be followed unless orders violate server rules or faction ideology. Faction-specific engagement types (Traditional, Asymmetrical, Refined, Savage) define how your faction fights. Equipment restrictions apply by rank. Faction wars, territory control, recruitment, and member discharge all have specific procedures — see the wiki for your faction's full rules.[/color]
+      </Box>
+
+      <Box Orientation="Vertical" Margin="10 0 0 0">
+        [color=#1a8a00]=============================================[/color]
+      </Box>
+      <Box Orientation="Horizontal" HorizontalAlignment="Center">
+        [color=#888888]Not knowing the rules is not an excuse. Play stupid games, win stupid prizes.[/color]
+      </Box>
+      <Box Orientation="Horizontal" HorizontalAlignment="Center">
+        [color=#888888]Press F1 at any time to review these rules. Escape → Admin Help to contact staff.[/color]
       </Box>
     </Box>
   </ColorBox>

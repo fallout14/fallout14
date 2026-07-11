@@ -1,0 +1,14 @@
+diff a/Content.Server/_Misfits/Supporter/SupporterManagerEui.cs b/Content.Server/_Misfits/Supporter/SupporterManagerEui.cs	(rejected hunks)
+@@ -25,6 +25,12 @@ public SupporterManagerEui()
+         IoCManager.InjectDependencies(this);
+     }
+ 
++    public override async void Opened()
++    {
++        await _supporters.WaitLoadedAsync();
++        StateDirty();
++    }
++
+     public override EuiStateBase GetNewState()
+     {
+         var state = new SupporterManagerState(_supporters.GetAll().ToList(), _pendingStatus);

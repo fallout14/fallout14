@@ -34,6 +34,8 @@ using Robust.Shared.Configuration;
 using Robust.Shared.Map;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Content.Server.Audio;
+using Content.Server.Sound;
 using Robust.Shared.Utility;
 
 namespace Content.Server.NPC.Systems
@@ -64,6 +66,8 @@ namespace Content.Server.NPC.Systems
         [Dependency] private readonly SharedPopupSystem _popup = default!;
         [Dependency] private readonly SharedSpecialSystem _special = default!;
         [Dependency] private readonly SharedTransformSystem _transform = default!;
+        [Dependency] private readonly EmitSoundSystem _emitSound = default!;
+        [Dependency] private readonly SharedAmbientSoundSystem _ambient = default!;
 
         /// <summary>
         /// Whether any NPCs are allowed to run at all.
@@ -99,10 +103,24 @@ namespace Content.Server.NPC.Systems
             SubscribeLocalEvent<FollowerAutoRecruitComponent, ComponentStartup>(OnFollowerAutoRecruitStartup);
         }
 
+        /// TODO: maybe have other system handle this
         public void OnPlayerNPCAttach(EntityUid uid, HTNComponent component, PlayerAttachedEvent args)
         {
+            // #Cythisiax Added - Player pet movement hotfix
+            // Misfit change:
+
             SleepNPC(uid, component);
+            // [hotfix]TEMP!!!: player pets without proximityComp couldn't move without this
+            // anything with htn being possessed get sound/movement no matter what
+            // I didnt modify SleepNPC itself to not affect performance with
+            // an additional comp look up and check
+            // Super temp until I can refactor NPCs, their comps, yaml, ect...
+            EnsureComp<InputMoverComponent>(uid);
+            _emitSound.SetEnabled((uid, (SpamEmitSoundComponent?) null), true);
+            _ambient.SetAmbience(uid, true);
+
         }
+        // todo: maybe have other system handle this
 
         public void OnPlayerNPCDetach(EntityUid uid, HTNComponent component, PlayerDetachedEvent args)
         {
@@ -163,6 +181,9 @@ namespace Content.Server.NPC.Systems
             EnsureComp<ActiveNPCComponent>(uid);
         }
 
+        // TODO: on refactor make methods better convey what they do exactly
+        // ie... like a removeAI() for player possesion or just make that be handled by seperate system
+        // or just have this strictly be FOR NPCS AKA NON-PLAYABLE CHARACTERS
         public void SleepNPC(EntityUid uid, HTNComponent? component = null)
         {
             if (!Resolve(uid, ref component, false))

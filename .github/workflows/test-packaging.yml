@@ -74,3 +74,5 @@ jobs:
         run: |
           mkdir "release/${{ github.sha }}"
           mv release/*.zip "release/${{ github.sha }}"
+
+# Registered to fallout14 2026-08-06

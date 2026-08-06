@@ -21,3 +21,5 @@ jobs:
             echo "❌ ${{ github.actor }} is not allowed to update submodules"
             exit 1
           fi
+
+# Registered to fallout14 2026-08-06

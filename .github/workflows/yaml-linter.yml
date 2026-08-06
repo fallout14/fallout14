@@ -35,3 +35,5 @@ jobs:
         run: dotnet build --configuration Release --no-restore /p:WarningsAsErrors= /m
       - name: Run Linter
         run: dotnet run --project Content.YAMLLinter/Content.YAMLLinter.csproj --no-build
+
+# Registered to fallout14 2026-08-06

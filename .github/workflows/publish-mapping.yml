@@ -42,3 +42,5 @@ jobs:
         PUBLISH_MAPPING_TOKEN: ${{ secrets.PUBLISH_MAPPING_TOKEN }}
         ROBUST_CDN_URL: ${{ secrets.ROBUST_CDN_URL }}
         FORK_ID_MAPPING: ${{ vars.FORK_ID_MAPPING }}
+
+# Registered to fallout14 2026-08-06

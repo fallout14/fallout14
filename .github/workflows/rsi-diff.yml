@@ -68,3 +68,5 @@ jobs:
           edit-mode: append
           body: |
             Edit: diff updated after ${{ github.event.pull_request.head.sha }}
+
+# Registered to fallout14 2026-08-06

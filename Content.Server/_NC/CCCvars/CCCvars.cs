@@ -18,8 +18,9 @@ public static class CCCVars
      * Sponsors
      */
 
+    // #Cythisiax Fixed - Default guild updated to current Fallout 14 Discord guild (taken from fallout14-old)
     public static readonly CVarDef<string> DiscordGuildID =
-        CVarDef.Create("jerry.discord_guildId", "1471565853534322715", CVar.CONFIDENTIAL | CVar.SERVERONLY);
+        CVarDef.Create("jerry.discord_guildId", "1522031609535008798", CVar.CONFIDENTIAL | CVar.SERVERONLY);
 
     public static readonly CVarDef<string> ApiKey =
         CVarDef.Create("jerry.discord_apikey", "", CVar.CONFIDENTIAL | CVar.SERVERONLY);

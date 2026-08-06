@@ -1,104 +1,38 @@
 [
   {
-    "role": "1471572675397812265",
-    "title": "CEO",
-    "color": "#fff46b",
-    "priority": 170
-  },
-  {
-    "role": "1471575384511348837",
-    "title": "COO",
-    "color": "#8799ae",
-    "priority": 160
-  },
-  {
-    "role": "1471580011306811455",
-    "title": "SOC",
-    "color": "#dfb448",
-    "priority": 150
-  },
-  {
-    "role": "1479608507677413396",
-    "title": "Chief Engineer",
-    "color": "#ffec6f",
-    "priority": 140
-  },
-  {
-    "role": "1509629888179736616",
-    "title": "Chief Architect",
-    "color": "#9e69ff",
-    "priority": 130
-  },
-  {
-    "role": "1508828668359606415",
-    "title": "SSA",
-    "color": "#4cadd0",
-    "priority": 120
-  },
-  {
-    "role": "1471580122904658063",
-    "title": "Security Administrator",
-    "color": "#d4843d",
-    "priority": 110
-  },
-  {
-    "role": "1508832332432281831",
-    "title": "SCO",
-    "color": "#9b8666",
+    "role": "1522232262421254144",
+    "title": "Management",
+    "color": "#ff4444",
     "priority": 100
   },
   {
-    "role": "1471580167792099370",
-    "title": "CO",
-    "color": "#9b8666",
-    "priority": 90
-  },
-  {
-    "role": "1471580236956172400",
-    "title": "JCO",
-    "color": "#9b8666",
+    "role": "1522118659080720384",
+    "title": "Server Administrator",
+    "color": "#ff6b6b",
     "priority": 80
   },
   {
-    "role": "1512941329494311054",
-    "title": "Engineer",
-    "color": "#d67b7b",
-    "priority": 70
-  },
-  {
-    "role": "1520804737954480309",
-    "title": "Chairman Shareholder",
-    "color": "#8799ae",
+    "role": "1522242182814109817",
+    "title": "Administrator",
+    "color": "#ff9999",
     "priority": 60
   },
   {
-    "role": "1498401134656618587",
-    "title": "Principal Shareholder",
-    "color": "#c875d3",
-    "priority": 50
-  },
-  {
-    "role": "1472727709284045013",
-    "title": "Shareholder",
-    "color": "#5c3963",
+    "role": "1522991533337346129",
+    "title": "Trial Administrator",
+    "color": "#ffcccc",
     "priority": 40
   },
   {
-    "role": "1472727184216035502",
-    "title": "Venture Capitalist",
-    "color": "#749472",
-    "priority": 30
-  },
-  {
-    "role": "1472727937735458836",
-    "title": "Equity Partner",
-    "color": "#9e6bff",
+    "role": "1522991571564367993",
+    "title": "Moderator",
+    "color": "#a8d8a8",
     "priority": 20
   },
   {
-    "role": "1472728004558852279",
-    "title": "Bondholder",
-    "color": "#826bc2",
+    "role": "1524888121068617870",
+    "title": "Wastelander",
+    "color": "#8b7355",
     "priority": 10
   }
 ]

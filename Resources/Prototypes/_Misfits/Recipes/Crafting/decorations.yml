@@ -1,0 +1,469 @@
+#Misfits Add: Construction prototype for FLAGS!!!
+# Uses cloth as the primary obtainable material
+
+# Flags
+- type: construction
+  name: Flag of the United States
+  id: N14FlagWallUS
+  graph: MisfitsFlagUS
+  startNode: start
+  targetNode: flagus
+# category: construction-category-decorations
+  description: The banner of the United States, an empire that fell over two centuries ago. Even with its dissolution in the Great War, many still believe the nation stands so long as its people believe in it.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_us
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the People's Republic of China
+  id: N14FlagWallChina
+  graph: MisfitsFlagCH
+  startNode: start
+  targetNode: flagch
+# category: construction-category-decorations
+  description: The banner of the People's Republic of China, it existed over a century, inheritor of an empire of 3500 years, but its ultimate fate is a mystery in this wasteland.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_china
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the State of California
+  id: N14FlagWallCalifornia
+  graph: MisfitsFlagCI
+  startNode: start
+  targetNode: flagci
+# category: construction-category-decorations
+  description: The banner of the State of California, home of both the Brotherhood of Steel and New California Republic's foundation. It is regarded by many as the state where America began to truly rebuild.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_cali
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the State of Arizona
+  id: N14FlagWallArizona
+  graph: MisfitsFlagAZ
+  startNode: start
+  targetNode: flagaz
+# category: construction-category-decorations
+  description: The banner of the State of Arizona, which is now the home of Caesar's Legion. Once a hive of lawless violence, the Legion's structured violence has now made it a safe place for civilians to live.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_arizona
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Enclave
+  id: N14FlagWallEnclave
+  graph: MisfitsFlagEN
+  startNode: start
+  targetNode: flagen
+# category: construction-category-decorations
+  description: The banner of the Enclave, the descendents of America's elite who claim to be the true inheritors of the United States federal government.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_enclave
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the New California Republic
+  id: N14FlagWallNCR
+  graph: MisfitsFlagNCR
+  startNode: start
+  targetNode: flagncr
+# category: construction-category-decorations
+  description: The banner of the New California Republic, a nation that despite enemies within and without, has done its best to provide comfort and equality to its citizens.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_ncr
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of Caesar's Legion
+  id: N14FlagWallLegion
+  graph: MisfitsFlagLE
+  startNode: start
+  targetNode: flagle
+# category: construction-category-decorations
+  description: The banner of Caesar's Legion, a slave army under the mighty warlord Caesar, whose monumental ego and sharp wit have seen the lawless east fall in line under his iron boot.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_legion
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the NCR Rangers
+  id: N14FlagWallRangers
+  graph: MisfitsFlagRG
+  startNode: start
+  targetNode: flagrg
+# category: construction-category-decorations
+  description: The banner of the New California Republic Rangers, an elite military division in the New California Republic Army. Founded by the legendary Seth of Shady Sands, if you need a problem handled, call the Rangers.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_rangers
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Brotherhood of Steel
+  id: N14FlagWallWesternBrotherhood
+  graph: MisfitsFlagBOSW
+  startNode: start
+  targetNode: flagbosw
+# category: construction-category-decorations
+  description: The banner of the Brotherhood of Steel, descendents of the United States military who now attempt to confiscate and safeguard dangerous technology to prevent another apocalypse.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor2.rsi
+    state: flag_midwest
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+#- type: construction
+#  name: Washington Brotherhood of Steel flag
+#  id: N14FlagWallWashingtonBrotherhood
+#  graph: MisfitsFlagBOSE
+#  startNode: start
+#  targetNode: flagbose
+# category: construction-category-decorations
+#  description: A Washington Brotherhood of Steel flag.
+#  hide: false
+#  icon:
+#    sprite: _Nuclear14/Structures/Wallmounts/walldecor3.rsi
+#    state: flag_washing
+#  objectType: Structure
+#  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the State of Colorado
+  id: N14FlagWallColorado
+  graph: MisfitsFlagCL
+  startNode: start
+  targetNode: flagcl
+# category: construction-category-decorations
+  description: The banner of the State of Colorado. It served as a testing ground before the Great War for cyberdog police units, which saw heavy use when the Food Riots began in earnest.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_colorado
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the City of Denver
+  id: N14FlagWallDenver
+  graph: MisfitsFlagDE
+  startNode: start
+  targetNode: flagde
+# category: construction-category-decorations
+  description: The banner of the city of Denver, Colorado. Home of the Hangdogs tribe, its stiff resistance nearly caused Caesar's Legion to break, until Legate Lanius forced the tribe's surrender by burning their dogs alive.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Wallmounts/walldecor_flags.rsi
+    state: flag_denver
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Children of Atom
+  id: MisfitsBannerChildrenOfAtom
+  graph: MisfitsFlagSmallCoA
+  startNode: start
+  targetNode: flagbcoas
+# category: construction-category-decorations
+  description: The banner of the Children of Atom cult. They believe that radiation is a gift that will help its followers ascend, as it transforms the land and the life within it.
+  hide: false
+  icon:
+    sprite: _Misfits/Structures/Decoration/coa_banner_small.rsi
+    state: banner
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Town of Bazaar
+  id: NCFlagWallBazaar
+  graph: DecorationFlagBazaar
+  startNode: start
+  targetNode: FlagBazaar
+  description: The banner of the Town of Bazaar, based in the southern remains of Wendover, Utah. When the bombs first dropped, Wendover split into three survivor communities, the Locusts, Vultures and Willowers. At first a camp of scavengers, the Vulture Tribe eventually civilized into a fully fledged trading outpost of towners. They built the Bazaar out of salvage they gathered and repaired over the first twenty years.
+#  category: construction-category-furniture
+  objectType: Structure
+  placementMode: SnapgridCenter
+  canBuildInImpassable: false
+  hide: false
+  icon:
+    sprite: Corvax/Structures/Wallmount/flag.rsi
+    state: flag_bazar
+
+- type: construction
+  name: Flag of the Caravan Network
+  id: NCFlagWallTown
+  graph: DecorationFlagTown
+  startNode: start
+  targetNode: FlagTown
+  description: The banner of the Caravan Network, an organization of contractors, suppliers, merchants and their bodyguards that stretch from the West Coast to the Midwest. They maintain neutrality and will gladly take anyone's money.
+#  category: construction-category-furniture
+  objectType: Structure
+  placementMode: SnapgridCenter
+  canBuildInImpassable: false
+  hide: false
+  icon:
+    sprite: Corvax/Structures/Wallmount/flag.rsi
+    state: flag_town
+
+- type: construction
+  name: Flag of Mexico
+  id: NCFlagWallMexico
+  graph: DecorationFlagMexico
+  startNode: start
+  targetNode: FlagMexico
+  description: The banner of Mexico, it was invaded and occupied by the United States military during the Resource Wars, and fell into total anarchy after the Great War began and ended.
+#  category: construction-category-furniture
+  objectType: Structure
+  placementMode: SnapgridCenter
+  canBuildInImpassable: false
+  hide: false
+  icon:
+    sprite: Corvax/Structures/Wallmount/flag.rsi
+    state: flag_mex
+
+# Banners aka big flags
+
+- type: construction
+  name: Flag of the Children of Atom
+  id: MisfitsDecorationFlagChildrenOfAtom
+  graph: MisfitsFlagCoA
+  startNode: start
+  targetNode: flagcoa
+# category: construction-category-decorations
+  description: The banner of the Children of Atom, it proudly stands against a world that would refuse the teachings of its acolytes. Where this flag is planted, so too will come the gift of Atom's radiant glow.
+  hide: false
+  icon:
+    sprite: _Misfits/Structures/Decoration/coa_banner_big.rsi
+    state: banner
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Oasis Tribe
+  id: N14DecorationFlagOasis
+  graph: DecorationFlagOasis
+  startNode: start
+  targetNode: FlagOasis
+# category: construction-category-decorations
+  description: The banner of the Oasis Tribe, originating in the remains of Pahrump, Nevada. The tribe was incorporated into the New California Republic, yet its members still remember their roots as they settle new lands.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: oasisflag
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+#- type: construction
+#  name: Washington Brotherhood of Steel flag
+#  id: N14DecorationFlagBrotherhoodWashington
+#  graph: DecorationFlagBrotherhoodWashington
+#  startNode: start
+#  targetNode: FlagBrotherhoodWashington
+# category: construction-category-decorations
+#  description: A red and black flag with a sword surrounded in gears and wings.
+#  hide: false
+#  icon:
+#    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+#    state: wbosflag
+#  objectType: Structure
+#  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Enclave
+  id: N14DecorationFlagEnclave
+  graph: DecorationFlagEnclave
+  startNode: start
+  targetNode: FlagEnclave
+# category: construction-category-decorations
+  description: The banner of the Enclave, the descendents of the business and government elite of the United States, who believe it is their manifest destiny to rebuild and rule the wasteland as their birthright.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: enclaveflag
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of High Valley Hills
+  id: N14DecorationFlagHighvalleyhills
+  graph: DecorationFlagHighvalleyhills
+  startNode: start
+  targetNode: FlagHighvalleyhills
+# category: construction-category-decorations
+  description: The banner of High Valley Hills, a settlement that cropped up around Vault City in the New California Republic from those who were not permitted entry; it is a mix of a slum and work camp for the desperate.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: hvhflag
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of Vault City
+  id: N14DecorationFlagVaultTecCityCoalition
+  graph: DecorationFlagVaultTecCityCoalition
+  startNode: start
+  targetNode: FlagVaultTecCityCoalition
+# category: construction-category-decorations
+  description: The banner of Vault City, a major settlement that evolved from Vault 8 in what remains of the west coast of the United States. They are a notable exporter of medical technology.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: vtccflag
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Great Khans Tribe
+  id: N14DecorationFlagKhans
+  graph: DecorationFlagKhans
+  startNode: start
+  targetNode: FlagKhans
+# category: construction-category-decorations
+  description: The banner of the Great Khans Tribe, weathered and worn from a long cherished history of raiding the helpless. The decorated skull smiles with mockery at those who would challenge it.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: khanflag
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Church of Renewal
+  id: N14DecorationFlagChurch
+  graph: DecorationFlagChurch
+  startNode: start
+  targetNode: FlagChurch
+# category: construction-category-decorations
+  description: The banner of the Church of Renewal, a cult that believes the nuclear apocalypse was a gift of creation, and that forced evolution of humanity is not only our one path to survival, but our sacred destiny.
+  hide: false
+  icon:
+    sprite: _Nuclear14/Structures/Decoration/flags.rsi
+    state: cotc
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: Flag of the Willowers Tribe
+  id: MisfitsDecorationFlagTribe
+  graph: MisfitsFlagTribe
+  startNode: start
+  targetNode: FlagTribe
+  # category: construction-category-decorations
+  description: The banner of the Willowers Tribe, a local settlement who worship the 'tree of life' illustrated on this flag. When the bombs first dropped, Wendover split into three survivor communities, the Locusts, Vultures and Willowers. The Willowers harvests and hunts were responsible for keeping all three fed in the first few years.
+  hide: false
+  icon:
+    sprite: _Misfits/Structures/Decoration/tribal_banner.rsi
+    state: banner1
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+# signs like left and right wooden ones in mines
+
+- type: construction
+  name: wooden sign
+  id: WoodenSign
+  graph: WoodenSign
+  startNode: start
+  targetNode: sign_left
+  description: He's pointing somewhere.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: sign_left
+  objectType: Structure
+
+- type: construction
+  name: wooden sign
+  id: WoodenSignRight
+  graph: WoodenSign
+  startNode: start
+  targetNode: sign_right
+  description: He's pointing somewhere, but this time on the right.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: sign_right
+  objectType: Structure
+
+# mineshaft supports
+
+- type: construction
+  name: wooden support
+  id: WoodenSupport
+  graph: WoodenSupports
+  startNode: start
+  targetNode: support
+  description: A t-shaped wooden support beam, used to shore up mine shafts and tunnels.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: support
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: wooden support beams
+  id: WoodenSupportBeam
+  graph: WoodenSupports
+  startNode: start
+  targetNode: support_beams
+  description: Two sturdy wooden support beams.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: support_beams
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: wooden support wall
+  id: WoodenSupportWall
+  graph: WoodenSupports
+  startNode: start
+  targetNode: support_wall
+  description: A support wall made of wood, commonly used in mines.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: support_wall
+  objectType: Structure
+  placementMode: SnapgridCenter
+
+- type: construction
+  name: broken wooden support wall
+  id: WoodenSupportWallBroken
+  graph: WoodenSupports
+  startNode: start
+  targetNode: support_wall_broken
+  description: An old wooden support wall that's seen better days. It looks like it could collapse at any moment.
+  hide: false
+  icon:
+    sprite: Objects/Decoration/mines.rsi
+    state: support_wall_broken
+  objectType: Structure
+  placementMode: SnapgridCenter

@@ -1,0 +1,108 @@
+- type: entity
+  parent: N14ClothingHeadHatCombatHelmet
+  id: FalloutNCRmilitarypoliceHelmet
+  name: NCR Military Police Helmet
+  description: A helmet worn by the NCR Military Police.
+  components:
+  - type: Sprite
+    sprite: _Nuclear14/Clothing/Head/FalloutHelmets/falloutNCRmilitarypolicehelmet.rsi
+  - type: Clothing
+    sprite: _Nuclear14/Clothing/Head/FalloutHelmets/falloutNCRmilitarypolicehelmet.rsi
+  - type: Armor
+    modifiers:
+      coefficients:
+        Blunt: 0.85
+        Slash: 0.90
+        Piercing: 0.90
+
+- type: entity
+  parent: ClothingHeadBase
+  id: N14ClothingHeadHatNCRSlouch
+  name: NCR slouch hat
+  description: An irregular issue NCR sun hat, the left side of the brim is pinned to the crown for ease with shouldering rifles
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/sloachhead.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/sloachhead.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadAntlerSkull
+  name: antler skullcap
+  description: An antler skull headdress traditionally worn by the spiritually inclined.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/antlerhelm.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/antlerhelm.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadRedBandana
+  name: red bandana
+  description: A bandana. Tougher than it looks.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/redbandana.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/redbandana.rsi
+
+- type: entity
+  parent: N14ClothingHeadHatCombatHelmet
+  id: MisfitsClothingHeadRadstagHelmet
+  name: radstag ritual skull helmet
+  description: A radstag skull headdress, painted and draped in heavy leather.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/Helmets/radstag-helmet.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/Helmets/radstag-helmet.rsi
+  - type: HideLayerClothing
+    slots:
+    - Hair
+    - Snout
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadMarlowHat
+  name: boss of the plains hat
+  description: A thick undyed felt cowboy hat, bleached from excessive sun exposure and creased from heavy usage.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/marlowhat.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/marlowhat.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadSchlimmHat
+  name: foreign florentine hat
+  description: A thick undyed felt cowboy hat, bleached from excessive sun exposure and creased from heavy usage.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/schlimmhat.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/schlimmhat.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadAHPhelmet
+  name: highway patrol helmet
+  description: An old police motorcycle helmet with the logo of the 'Utah Department of Public Safety' emblazoned on the front.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/ahphelmet.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/ahphelmet.rsi
+
+- type: entity
+  parent: ClothingHeadBase
+  id: MisfitsClothingHeadKhanHelmet
+  name: great khan helmet
+  description: A piece of headwear commonly worn by the Great Khans that appears to resemble stereotypical traditional Mongolian helmets - likely adapted from a pre-War motorcycle helmet. It is black with two horns on either side and a small spike jutting from the top, much like a pickelhaube. A leather covering protects the wearer's neck and ears from sunburn.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Clothing/Head/khanhorned.rsi
+  - type: Clothing
+    sprite: _Misfits/Clothing/Head/khanhorned.rsi

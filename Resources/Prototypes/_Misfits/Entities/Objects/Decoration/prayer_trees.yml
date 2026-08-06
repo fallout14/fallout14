@@ -1,0 +1,104 @@
+﻿- type: entity
+  parent: BaseTree
+  id: BasePrayerTree
+  abstract: true
+  components:
+  - type: Prayable
+  - type: Destructible
+    thresholds:
+    - trigger:
+        !type:DamageTrigger
+        damage: 10000
+      behaviors:
+      - !type:PlaySoundBehavior
+        sound:
+          path: /Audio/Effects/tree_fell.ogg
+          params:
+            volume: 5
+            variation: 0.05
+      - !type:DoActsBehavior
+        acts: [ "Destruction" ]
+      - !type:SpawnEntitiesBehavior
+        spawn:
+          N14FloraLogTimber:
+            min: 2
+            max: 8
+          HeadSkeleton:
+            min: 1
+            max: 1
+          MaterialBones1:
+            min: 3
+            max: 10
+
+
+- type: entity
+  parent: BasePrayerTree
+  id: TreeOfMars
+  name: Tree of Mars
+  description: The leaves whisper of past deeds and glories.
+  components:
+  - type: Sprite
+    sprite: _Misfits/Structures/Decoration/Flora/mutant_trees.rsi
+    state: tree-of-mars
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.9,-0.8,0.9,0.4"
+        density: 1000
+        layer:
+          - WallLayer
+  - type: PointLight
+    color: "#fadcc0"
+    radius: 5
+    power: 4
+
+- type: entity
+  parent: BasePrayerTree
+  id: TribalTree
+  name: Tree of Life
+  description: The glowing strands sway gently in the still air.
+  components:
+    - type: Sprite
+      sprite: _Misfits/Structures/Decoration/Flora/mutant_trees.rsi
+      state: tribal-tree
+    - type: Fixtures
+      fixtures:
+        fix1:
+          shape:
+            !type:PhysShapeAabb
+            bounds: "-0.5,-0.65,0.5,0.2"
+          density: 1000
+          layer:
+            - WallLayer
+    - type: PointLight
+      color: "#c0faef"
+      radius: 5
+      power: 4
+    # #Misfits Add - Willower leadership-only Tree announcement.
+    - type: SmokeSignal
+      cooldown: 0 # #Misfits Change - the Tree of Life can announce without a cooldown.
+      maxMessageLength: 128
+      targetDepartment: Tribe
+      nearbyRange: 0
+      openOnActivate: false
+      activatorJobs: [ TribalShaman, TribalElder ]
+      verb: willower-tree-announce-verb
+      broadcastMessage: willower-tree-announcement
+      cooldownMessage: willower-tree-announcement-cooldown
+    - type: UserInterface
+      interfaces:
+        enum.SmokeSignalUiKey.Key:
+          type: SmokeSignalBoundUserInterface
+        enum.WastelandMapUiKey.Key:
+          type: WastelandMapBoundUserInterface
+    # #Misfits Add - Willower leadership pendant-tracking TacMap.
+    - type: WastelandMap
+      mapTitle: Willowers Tree of Life
+      tacticalFeed: Tribe
+      activatorJobs: [ TribalShaman, TribalElder ]
+    - type: ActivatableUI
+      inHandsOnly: false
+      singleUser: true
+      key: enum.WastelandMapUiKey.Key

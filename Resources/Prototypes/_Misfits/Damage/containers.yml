@@ -1,0 +1,17 @@
+- type: damageContainer
+  id: MisfitsNPCBiological
+  supportedGroups:
+  - Brute
+  - Burn
+  - Toxin
+  - Airloss
+  - Genetic
+
+- type: damageContainer
+  id: MisfitsC27ZAXNoExternalRepair
+  supportedGroups:
+  - Brute
+  supportedTypes:
+  - Heat
+  - Shock
+  - Caustic

@@ -21,3 +21,5 @@ jobs:
           dirtyLabel: "Status: Merge Conflict"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           commentOnDirty: "This pull request has conflicts, please resolve those before we can evaluate the pull request."
+
+# Registered to fallout14 2026-08-06

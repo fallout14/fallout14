@@ -23,3 +23,5 @@ jobs:
         path_pattern: .*Resources/Maps/.*
         validators_path: RobustToolbox/Schemas/mapfile_validators.py
         validators_requirements: RobustToolbox/Schemas/mapfile_requirements.txt
+
+# Registered to fallout14 2026-08-06

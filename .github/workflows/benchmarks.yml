@@ -45,3 +45,5 @@ jobs:
           dotnet run --filter '*' --configuration Release
           cd ../../..
           rm -rf benchmark_run_content_${{ github.sha }}
+
+# Registered to fallout14 2026-08-06

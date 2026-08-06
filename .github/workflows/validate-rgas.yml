@@ -23,3 +23,5 @@ jobs:
         path_pattern: .*attributions.ya?ml$
         validators_path: RobustToolbox/Schemas/rga_validators.py
         validators_requirements: RobustToolbox/Schemas/rga_requirements.txt
+
+# Registered to fallout14 2026-08-06

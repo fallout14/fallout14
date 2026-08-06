@@ -22,3 +22,5 @@ jobs:
         CHANGELOG_DIR: Resources/Changelog/Changelog.yml
         CHANGELOG_WEBHOOK: ${{ secrets.CHANGELOG_WEBHOOK }}
         GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+
+# Registered to fallout14 2026-08-06

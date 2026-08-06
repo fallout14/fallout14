@@ -39,3 +39,5 @@ jobs:
       env:
         BUILD_DIR: Content.Docfx/_content-site
         GH_PAT: ${{ secrets.GH_PAT }}
+
+# Registered to fallout14 2026-08-06

@@ -24,3 +24,5 @@ jobs:
       - name: Validate RSIs
         run: |
           python3 RobustToolbox/Schemas/validate_rsis.py Resources/
+
+# Registered to fallout14 2026-08-06

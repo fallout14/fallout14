@@ -356,7 +356,7 @@ namespace Content.Server.Lathe
             if (TryComp<BallisticAmmoProviderComponent>(crafted, out var ballistic))
             {
                 ballistic.UnspawnedCount = 0;
-                ballistic.Entities.Clear();
+                ballistic.SpawnedCountPredict = 0;
                 Dirty(crafted, ballistic);
             }
 

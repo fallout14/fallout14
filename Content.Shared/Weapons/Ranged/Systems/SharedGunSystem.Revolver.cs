@@ -3,10 +3,6 @@ using Content.Shared.Verbs;
 using Content.Shared.Weapons.Ranged.Components;
 using Content.Shared.Weapons.Ranged.Events;
 using Robust.Shared.Containers;
-using Robust.Shared.GameStates;
-using Robust.Shared.Serialization;
-using Robust.Shared.Utility;
-using System.Linq;
 using Content.Shared.Interaction.Events;
 using JetBrains.Annotations;
 
@@ -127,8 +123,10 @@ public partial class SharedGunSystem
                 return false;
             }
 
-            for (var i = Math.Min(ev.Ammo.Count - 1, component.Capacity - 1); i >= 0; i--)
+            for (var i = 0; i < component.Capacity; i++)
             {
+                if (ev.Ammo.Count == 0)
+                    break;
                 var index = (component.CurrentIndex + i) % component.Capacity;
 
                 if (component.AmmoSlots[index] != null ||
@@ -150,8 +148,7 @@ public partial class SharedGunSystem
                 Containers.Insert(ent.Value, component.AmmoContainer);
                 SetChamber(index, component, uid);
 
-                if (ev.Ammo.Count == 0)
-                    break;
+
             }
 
             DebugTools.Assert(ammo.Count == 0);
@@ -339,7 +336,7 @@ public partial class SharedGunSystem
 
     public void EmptyRevolver(EntityUid revolverUid, RevolverAmmoProviderComponent component, EntityUid? user = null)
     {
-        var mapCoordinates = TransformSystem.GetMapCoordinates(revolverUid);
+        var mapCoordinates = _xform.GetMapCoordinates(revolverUid);
         var anyEmpty = false;
 
         for (var i = 0; i < component.Capacity; i++)
@@ -353,15 +350,17 @@ public partial class SharedGunSystem
                     continue;
 
                 // Too lazy to make a new method don't sue me.
-                if (!_netManager.IsClient)
-                {
-                    var uid = Spawn(component.FillPrototype, mapCoordinates);
+                //if (!_netManager.IsClient)
+                //{
+                var uid = Spawn(component.FillPrototype, mapCoordinates);
+                if (_netManager.IsClient) { FlagPredicted(uid); }
 
-                    if (TryComp<CartridgeAmmoComponent>(uid, out var cartridge))
-                        SetCartridgeSpent(uid, cartridge, !(bool) chamber);
-
-                    EjectCartridge(uid);
-                }
+                if (TryComp<CartridgeAmmoComponent>(uid, out var cartridge))
+                    SetCartridgeSpent(uid, cartridge, !(bool) chamber);
+                // misfit fix deuplicated spent carts
+                var sender = _player.TryGetSessionByEntity(user!.Value, out var session) ? session : _player.LocalSession;
+                EjectCartridge(uid, baseCoords: Transform(revolverUid).Coordinates, userSession: sender);
+                //}
 
                 component.Chambers[i] = null;
                 anyEmpty = true;
@@ -371,9 +370,12 @@ public partial class SharedGunSystem
                 component.AmmoSlots[i] = null;
                 Containers.Remove(slot.Value, component.AmmoContainer);
                 component.Chambers[i] = null;
+                // Misfit removed: if (!_netManager.IsClient)
+                //                 prediction handled in EjectCartridge
+                // msifit fix duplicated spent carts
+                var sender = _player.TryGetSessionByEntity(user!.Value, out var session) ? session : _player.LocalSession;
+                EjectCartridge(slot.Value, baseCoords: Transform(sender!.AttachedEntity!.Value).Coordinates, userSession: sender);
 
-                if (!_netManager.IsClient)
-                    EjectCartridge(slot.Value);
 
                 anyEmpty = true;
             }
@@ -471,7 +473,8 @@ public partial class SharedGunSystem
             // Delete the cartridge entity on client
             if (_netManager.IsClient)
             {
-                QueueDel(ent);
+                PredictedQueueDel(ent); //Misfit: does same thing(detaches to null space in client)
+                                        // but wont throw errors now
             }
         }
 

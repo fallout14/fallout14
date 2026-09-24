@@ -184,7 +184,7 @@ public abstract class ClothingSystem : EntitySystem
 
     private void OnGetState(EntityUid uid, ClothingComponent component, ref ComponentGetState args)
     {
-        args.State = new ClothingComponentState(component.EquippedPrefix);
+        args.State = new ClothingComponentState(component.EquippedPrefix, component.Sprite);
     }
 
     private void OnHandleState(EntityUid uid, ClothingComponent component, ref ComponentHandleState args)
@@ -192,6 +192,7 @@ public abstract class ClothingSystem : EntitySystem
         if (args.Current is ClothingComponentState state)
         {
             SetEquippedPrefix(uid, state.EquippedPrefix, component);
+            SetSprite(uid, state.Sprite, component);
             if (component.InSlot != null && _containerSys.TryGetContainingContainer((uid, null, null), out var container))
             {
                 CheckEquipmentForLayerHide(uid, container.Owner);
@@ -268,6 +269,36 @@ public abstract class ClothingSystem : EntitySystem
             return;
 
         clothing.EquippedPrefix = prefix;
+        _itemSys.VisualsChanged(uid);
+        Dirty(uid, clothing);
+    }
+
+    /// <summary>
+    /// Changes the RSI used when this clothing is equipped without altering any of
+    /// its mechanical components.
+    /// </summary>
+    public void SetSprite(EntityUid uid, string? sprite, ClothingComponent? clothing = null)
+    {
+        if (!Resolve(uid, ref clothing, false) || clothing.Sprite == sprite)
+            return;
+
+        clothing.Sprite = sprite;
+        _itemSys.VisualsChanged(uid);
+        Dirty(uid, clothing);
+    }
+
+    /// <summary>
+    /// Replaces an item's equipped clothing visuals without changing its mechanics.
+    /// </summary>
+    public void SetClothingVisuals(
+        EntityUid uid,
+        Dictionary<string, List<PrototypeLayerData>> clothingVisuals,
+        ClothingComponent? clothing = null)
+    {
+        if (!Resolve(uid, ref clothing, false))
+            return;
+
+        clothing.ClothingVisuals = clothingVisuals;
         _itemSys.VisualsChanged(uid);
         Dirty(uid, clothing);
     }

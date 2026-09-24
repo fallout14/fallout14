@@ -4,13 +4,17 @@
 
 undecided-loadout-category-explorer-tracker-name = Explorer Tracker
 undecided-loadout-category-explorer-tracker-description =
-    Includes a hunting rifle, 3 308. Ammo boxes, a bola, healing powder,
+    Includes a scavenged F1 Sniper, 2 308. Ammo boxes, a bola, healing powder,
     a healing poultice, 2 K rations, and a ceramic flask.
 
 undecided-loadout-category-explorer-raider-name = Explorer Raider
 undecided-loadout-category-explorer-raider-description =
-    Includes 2 bolas,
-    a grease gun and a 1911,
+    Includes a 10mm chinese smg, 2 bolas, 2 magazines for the smg, a 1911,
+    a healing poultice, a healing powder, 2 K rations, and a ceramic flask.
+
+undecided-loadout-category-explorer-hunter-name = Explorer Hunter
+undecided-loadout-category-explorer-hunter-description =
+    Includes a rapid fire hunting rifle, 2 308. Ammo boxes, a bola, healing powder,
     a healing poultice, 2 K rations, and a ceramic flask.
 
 # Migrated Corvax legacy Legion keys
@@ -49,26 +53,17 @@ undecided-loadout-category-dean-gladiator-description =
     A box with everything needed for combat.
     Contains: 1 Legion SKS, 4 SKS clips (.308),
     1 .45 Colt pistol, 2 pistol magazines (.45 ACP),
-    1 Legion shield, 1 rope belt, 1 Trench club,
+    1 Legion shield, a ceremonial sword, 1 rope belt,
     2 bola, 1 box of handcuffs, 2 healing Poultice,
     2 K-rations, 1 ceramic flask, and 1 mustard.
 
 undecided-loadout-category-dean-sagitaria-name = Decanus-Sagittarius Kit
 undecided-loadout-category-dean-sagitaria-description =
     A box with everything needed for ranged combat.
-    Contains: 1 Legion SKS, 4 SKS clips (.308),
+    Contains: 1 Legion SKS, 4 SKS clips (.308), a gladius,
     1 .45 Colt pistol, 2 pistol magazines (.45 ACP),
     1 rope belt, 1 smoke grenade, 2 healing Poultice,
     2 K-rations, 1 ceramic flask, and 1 mustard.
-
-undecided-loadout-category-dean-berserker-name = Decanus-Berserker Kit
-undecided-loadout-category-dean-berserker-description =
-    A box with everything needed to charge into battle.
-    Contains: 1 Legion SKS, 4 SKS clips (.308),
-    1 .45 Colt pistol, 2 pistol magazines (.45 ACP),
-    1 rope belt, 1 pair of powerfists, 3 throwing knives,
-    2 healing poultice, 2 K-rations,
-    1 ceramic flask, and 1 mustard.
 
 undecided-loadout-category-veteran-firearm-name = Veteran Legionary Firearm Kit
 undecided-loadout-category-veteran-firearm-description =
@@ -250,7 +245,7 @@ undecided-loadout-category-corvax-centurion-command-description =
 undecided-loadout-category-corvax-centurion-marksman-name = Centurion Marksman
 undecided-loadout-category-corvax-centurion-marksman-description =
     Includes Republic's Demise, a scoped M1C looted from a dead NCR lieutenant,
-    4 en-bloc clips, a rope belt, a smoke grenade,
+    2 spare magazines, a rope belt, a smoke grenade,
     2 healing poultice, 2 K rations, and a ceramic flask.
 
 undecided-loadout-category-corvax-centurion-vanquisher-name = Centurion Vanquisher
@@ -305,19 +300,28 @@ undecided-loadout-category-corvax-venator-marksman-name = Venator Marksman
 undecided-loadout-category-corvax-venator-marksman-description =
     Includes a .308 sniper rifle, a rope belt,
     4 mags of Overpressure .308, night vision goggles,
-    2 healing poultice, 2 K rations,
+    3 smoke grenades, 2 healing poultice, 2 K rations,
     a ceramic flask, and mustard.
 
 undecided-loadout-category-corvax-venator-stalker-name = Venator Stalker
 undecided-loadout-category-corvax-venator-stalker-description =
     Includes an advanced 12.7mm SMG, 3 spare 12.7 magazines,
-    a rope belt, night vision goggles, 2 healing poultice,
-    2 K rations, a ceramic flask, and mustard.
+    a rope belt, 2 smoke grenades, night vision goggles, 
+    2 healing poultice, 2 K rations,
+    a ceramic flask, and mustard.
 
 undecided-loadout-category-corvax-venator-executioner-name = Venator Executioner
 undecided-loadout-category-corvax-venator-executioner-description =
-    Includes a blowback shotgun, a rope belt,
-    2 boxes of 12 gauge shells, a ceremonial sword,
+    Includes a blowback shotgun, a ceremonial sword, 
+    a rope belt, 2 boxes of 12 gauge shells, 
+    an offensive grenade, night vision goggles,
+    2 healing poultice, 2 K rations,
+    a ceramic flask, and mustard.
+
+undecided-loadout-category-corvax-venator-operative-name = Venator Operative
+undecided-loadout-category-corvax-venator-operative-description =
+    Includes a modified and supressed R91, a rope belt,
+    3 spare 5.56 magazines, an offensive frag grenade,
     night vision goggles, 2 healing poultice, 2 K rations,
     a ceramic flask, and mustard.
 
@@ -424,25 +428,35 @@ undecided-loadout-category-corvax-recruit-decanus-crusher-description =
 
 undecided-loadout-category-corvax-decanus-gladiator-name = Decanus Gladiator
 undecided-loadout-category-corvax-decanus-gladiator-description =
+    Includes an m60 GPMG machine gun, an extra ammo box, a ceremonial sword,
+    a rope belt, 2 healing poultices, 2 K rations, a .45 Colt pistol, 2 .45 magazines,
+    the divine mustard, and a ceramic flask.
+
+undecided-loadout-category-corvax-decanus-crusher-name = Decanus Crusher
+undecided-loadout-category-corvax-decanus-crusher-description =
+    Includes a Goliath power fist, A Neostead shotgun, 2 12 gauge ammo boxes,
+    a rope belt, 2 healing poultices, 2 K rations, a .45 Colt pistol, 2 .45 magazines,
+    the delictable mustard, and a ceramic flask.
+
+undecided-loadout-category-corvax-decanus-demolitionist-name = Decanus Demolitionist
+undecided-loadout-category-corvax-decanus-demolitionist-description =
+    Includes a Grenade rifle, 6 40mm frag grenades, 2 40mm fire grenades, a thrown frag grenade,
+    a decorated tribal heavy club, a rope belt, 2 healing poultices, 2 K rations,
+    a .45 Colt pistol, 2 .45 magazines, the delicious mustard, and a ceramic flask.
+
+undecided-loadout-category-corvax-decanus-sharpshooter-name = Decanus Sharpshooter
+undecided-loadout-category-corvax-decanus-sharpshooter-description =
+    Includes a pipe 50 sniper rifle, a PPSh41 smg, two 9mm drum mags, a box of 50 cal rounds,
+    a rope belt, 2 healing poultices, 2 K rations, the divine mustard, a .45 Colt pistol,
+    2 .45 magazines, and a ceramic flask.
+
+undecided-loadout-category-corvax-decanus-destroyer-name = Decanus Heavy Destroyer
+undecided-loadout-category-corvax-decanus-destroyer-description =
     Includes a M240B with a spare belt, a .45 Colt pistol,
     2 .45 magazines, a Legion shield, a rope belt,
     a singular smoke grenade and a box of handcuffs,
     2 healing poultice, 2 K rations,
     a ceramic flask, and mustard.
-
-undecided-loadout-category-corvax-decanus-sagitaria-name = Decanus Sagitaria
-undecided-loadout-category-corvax-decanus-sagitaria-description =
-    Includes a salvaged M60 with a single extra box,
-    a .45 Colt pistol, 2 .45 magazines, a rope belt,
-    a smoke grenade, 2 healing poultice, 2 K rations,
-    a ceramic flask, and mustard.
-
-undecided-loadout-category-corvax-decanus-berserker-name = Decanus Berserker
-undecided-loadout-category-corvax-decanus-berserker-description =
-    Includes a Bren with an extra magazine, a smoke grenade,
-    a .45 Colt pistol, 2 .45 magazines, a power fist,
-    a rope belt, 2 healing poultice, 2 K rations,
-    a ceramic flask, and sweet sweet mustard.
 
 undecided-loadout-category-corvax-veteran-rifleman-name = Veteran Rifleman
 undecided-loadout-category-corvax-veteran-rifleman-description =
@@ -454,7 +468,7 @@ undecided-loadout-category-corvax-veteran-rifleman-description =
 undecided-loadout-category-corvax-veteran-berserker-name = Veteran Berserker
 undecided-loadout-category-corvax-veteran-berserker-description =
     Includes a .45 SMG with 4 mags, a .45 Colt pistol,
-    2 .45 magazines, a rope belt, a fire axe,
+    2 .45 magazines, a rope belt, a tribal decorated heavy club,
     3 throwing knives, 2 healing poultice,
     2 K rations, a ceramic flask, and mustard.
 
@@ -601,6 +615,22 @@ undecided-loadout-category-misfits-enclave-engineering-science-description =
     a filled electrical toolbox, a handheld radio,
     1 stimpak, 1 gauze pack, and 1 flare.
 
+# Misfits NCR Office of Science and Industry (OSI) sets
+undecided-loadout-category-misfits-osi-mechanical-name = Mechanical Branch Kit
+undecided-loadout-category-misfits-osi-mechanical-description =
+    Includes a filled mechanical toolbox, a filled electrical toolbox,
+    a handheld radio, 1 stimpak, 1 gauze pack, and 1 flare.
+
+undecided-loadout-category-misfits-osi-medical-name = Medical Branch Kit
+undecided-loadout-category-misfits-osi-medical-description =
+    Includes a filled combat medkit, 1 super stimpak,
+    1 RadAway blood bag, 2 gauze packs, and a handheld radio.
+
+undecided-loadout-category-misfits-osi-field-name = Field Branch Kit
+undecided-loadout-category-misfits-osi-field-description =
+    Includes a radiation suit, a geiger counter, a filled radiation medkit,
+    a 9mm pistol, 1 stimpak, 1 gauze pack, 1 flare, and a handheld radio.
+
 # Misfits NCR rank sets
 undecided-loadout-category-misfits-ncra-pfc-fireteam-name = Private First Class Fireteam Kit
 undecided-loadout-category-misfits-ncra-pfc-fireteam-description =
@@ -651,7 +681,7 @@ undecided-loadout-category-misfits-ncra-captain-command-description =
 undecided-loadout-category-misfits-ncra-captain-marksman-name = Captain Frontier Marksman Kit
 undecided-loadout-category-misfits-ncra-captain-marksman-description =
     Includes an NCR trench coat, a loaded captain's revolver belt,
-    Republic's Pride with 4 en-bloc clips,
+    Republic's Pride with 2 308 magazines,
     a handheld radio, a smoke grenade, a C ration MRE,
     a stimpak, a super stimpak, a RadAway blood bag,
     2 gauze packs, and a flare.
@@ -659,7 +689,7 @@ undecided-loadout-category-misfits-ncra-captain-marksman-description =
 undecided-loadout-category-misfits-ncra-captain-service-rifle-name = Captain Field Officer Kit
 undecided-loadout-category-misfits-ncra-captain-service-rifle-description =
     Includes NCR officer armor, an NCR belt,
-    a scoped service rifle with 6 magazines,
+    a marksman carbine with 4 magazines,
     a 9mm pistol with 3 magazines, a handheld radio,
     2 smoke grenades, a stick of dynamite, a C ration MRE,
     a stimpak, 2 super stimpaks, a RadAway blood bag,
@@ -728,15 +758,57 @@ c27-armor-set-bos-heavy-description =
 
 undecided-loadout-category-misfits-priestess-healing-name = Priestess of Restoration
 undecided-loadout-category-misfits-priestess-healing-desc =
-    Includes 4 Smelling Salts, 1 health analyzer, 2 Bitter Drinks,
+    Includes a Gladius, a 45 colt pistol with a spare mag,
+    4 Smelling Salts, 1 health analyzer, 2 Bitter Drinks,
     2 Poultices, 2 Powders, 2 Hydras, 3 bandages,
     a medical belt, 2 K rations, and a ceramic flask.
 
 undecided-loadout-category-misfits-priestess-zealot-name = Priestess of Zealotry
 undecided-loadout-category-misfits-priestess-zealot-desc =
-    Includes a Ceremonial Sword, Legionnaire Shield,
+    Includes a Neostead, Legionnaire Shield, two 12 guage ammo boxes,
     spear quiver, 3 pilum, 2 Bolas, 2 Cazador acid sacs,
     2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-priestess-purifier-name = Priestess of Purification
+undecided-loadout-category-misfits-priestess-purifier-desc =
+    Includes a flaming blade of Mars, 2 incendiary grenades, a heater shield,
+    a colt 45 with two magazines, 1 bandage, 1 Healing Poultice, 1 Healing Powder,
+    2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-acolyte-healing-name = Acolyte Healer
+undecided-loadout-category-misfits-acolyte-healing-desc =
+    Includes a 45 pistol, a machete, 2 Smelling Salts, 1 health analyzer, 1 Bitter Drink,
+    1 Poultices, 1 Powder, 1 bandage,
+    2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-acolyte-zealot-name = Acolyte Zealot
+undecided-loadout-category-misfits-acolyte-zealot-desc =
+    Includes a Gladius, Legionnaire buckler,
+    spear quiver, An SKS, 308 clips,
+    2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-acolyte-slaver-name = Acolyte Slaver
+undecided-loadout-category-misfits-acolyte-slaver-desc =
+    Includes an automatic shotgun, three boxes of beanbag ammo, handcuffs,
+    bolas, a baton, slave collars, a colt 45 with two magazines,
+    1 bandage, 1 Healing Poultice, 1 Healing Powder,
+    2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-temple-guard-protector-name = Temple Guard Protector
+undecided-loadout-category-misfits-temple-guard-protector-desc =
+    Includes a poleaxe, a heater shield, a colt 45 with two magazines,
+    1 bandage, 2 Healing Powders, 2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-temple-guard-enforcer-name = Temple Guard Enforcer
+undecided-loadout-category-misfits-temple-guard-enforcer-desc =
+    Includes an automatic shotgun, a gladius, three boxes of 12 gauge ammo,
+    1 bandage, 2 Healing Powders, 2 K rations, and a ceramic flask.
+
+undecided-loadout-category-misfits-temple-guard-executor-name = Temple Guard Executor
+undecided-loadout-category-misfits-temple-guard-executor-desc =
+    Includes a kebab, a buckler, a colt 45 with two magazines,
+    1 bandage, 2 Healing Powders, 2 K rations, and a ceramic flask.
+
 
 undecided-loadout-category-misfits-eighties-block-road-captain-name = Road Captain Kit
 undecided-loadout-category-misfits-eighties-block-road-captain-description =
@@ -833,6 +905,13 @@ undecided-loadout-category-misfits-ncr-ht-linebreaker-name = Heavy Trooper Lineb
 undecided-loadout-category-misfits-ncr-ht-linebreaker-description =
     The issued equipment of an HT who brawls with enemy heavy infantry.
     Comes with a .308 BAR, 2 spare mags for it, 2 smoke grenades,
+    2 sticks of dynamite, a stim and super stim, an MRE,
+    a RadAway bag, and two rolls of gauze.
+
+undecided-loadout-category-misfits-ncr-ht-minigun-name = Heavy Trooper Minigun Kit
+undecided-loadout-category-misfits-ncr-ht-minigun-description =
+    The issued equipment of an HT who lays down sustained fire.
+    Comes with a standard minigun, 2 minigun boxes, 2 smoke grenades,
     2 sticks of dynamite, a stim and super stim, an MRE,
     a RadAway bag, and two rolls of gauze.
 

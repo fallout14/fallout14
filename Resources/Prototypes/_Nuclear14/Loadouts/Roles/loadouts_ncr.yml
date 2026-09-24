@@ -18,6 +18,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -30,6 +31,10 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingEyesGlassesGoggles
 
@@ -45,6 +50,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -57,6 +63,10 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingHandsGlovesNCR
 
@@ -72,6 +82,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -84,6 +95,10 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingHeadHatWinterBoonie
 
@@ -99,6 +114,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -111,6 +127,10 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingHeadHatWoodBoonie
 
@@ -126,6 +146,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -138,12 +159,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingHeadHatDesertBoonie
 
 - type: loadout
   id: LoadoutNCRCloakNCR
-  category: Roles
+  category: Neck
   cost: 1
   exclusive: true
   requirements:
@@ -153,6 +178,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -164,12 +190,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingNeckCloakNCR
 
 - type: loadout
   id: LoadoutNCRCloakNCRGhillie
-  category: Roles
+  category: Neck
   cost: 1
   exclusive: true
   requirements:
@@ -179,6 +209,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -190,12 +221,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingNeckCloakGhillie
 
 - type: loadout
   id: LoadoutNCRCloakNCRSnow
-  category: Roles
+  category: Neck
   cost: 1
   exclusive: true
   requirements:
@@ -205,6 +240,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -216,12 +252,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingNeckCloakNCRSnow
 
 - type: loadout
   id: LoadoutNCRCloakNCRWoods
-  category: Roles
+  category: Neck
   cost: 1
   exclusive: true
   requirements:
@@ -231,6 +271,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -242,12 +283,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingNeckCloakNCRWoods
 
 - type: loadout
   id: LoadoutNCRMaskBalaclava
-  category: Roles
+  category: Mask
   cost: 1
   exclusive: true
   requirements:
@@ -257,6 +302,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -268,12 +314,16 @@
         - NCRFieldRanger
         - NCRPatrolRanger
         - NCRVeteranRanger
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingMaskBrownBalaclava
 
 - type: loadout
   id: LoadoutNCRuniformPants
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -283,6 +333,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -300,12 +351,16 @@
         - NCRCitizen
         - NCRTrader
         - NCRRO
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingUniformDesertPants
 
 - type: loadout
   id: LoadoutNCRuniformDesertPantsFull
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -315,6 +370,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -332,12 +388,17 @@
         - NCRCitizen
         - NCRTrader
         - NCRRO
+
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - N14ClothingUniformDesertPantsFull
 
 - type: loadout
   id: LoadoutNCRUniformNCRRecon
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -347,6 +408,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -363,6 +425,11 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement # T7 faction timelock (40h NCR)
       department: NCR
       min: 36000 # 10 hours
@@ -371,7 +438,7 @@
 
 - type: loadout
   id: LoadoutNCRUniformNCRReconLongSleeve
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -381,6 +448,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -397,6 +465,10 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement # T7 faction timelock (40h NCR)
       department: NCR
       min: 36000 # 10 hours
@@ -405,7 +477,7 @@
 
 - type: loadout
   id: LoadoutNCRUniformNCRShorts
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -415,6 +487,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -431,6 +504,10 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement
       department: NCR
       min: 144000 # 40 hours, work for them shorts!
@@ -439,7 +516,7 @@
 
 - type: loadout
   id: LoadoutNCRUniformNCRUtilityShirt
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -449,6 +526,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -465,6 +543,10 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement # T7 faction timelock (40h NCR)
       department: NCR
       min: 36000 # 10 hours
@@ -473,7 +555,7 @@
 
 - type: loadout
   id: LoadoutNCRUniformNCRFatigueShirt
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -483,6 +565,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -499,6 +582,10 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement
       department: NCR
       min: 18000 # 5 hours
@@ -507,7 +594,7 @@
 
 - type: loadout
   id: LoadoutNCRUniformNCRFatiguePants
-  category: Roles
+  category: Uniform
   cost: 1
   exclusive: true
   requirements:
@@ -517,6 +604,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -533,11 +621,41 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement
       department: NCR
       min: 72000 # 20 hours
   items:
     - N14ClothingUniformNCRFatiguePants
+
+- type: loadout
+  id: LoadoutNCRUniformNCRMedic
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRMedic
+        - NCRDoctor
+  items:
+    - M14ClothingUniformNCRMedic
+
+- type: loadout
+  id: LoadoutNCRUniformNCRMedicSkirt
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRMedic
+        - NCRDoctor
+  items:
+    - M14ClothingUniformNCRMedicSkirt
 
 - type: loadout
   id: LoadoutNCRBeltNCRHarness
@@ -551,6 +669,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -566,12 +685,16 @@
         - NCRPatrolRanger
         - NCRVeteranRanger
         - NCRRO
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
   items:
     - ClothingBeltNCRHarness
 
 - type: loadout
   id: LoadoutNCRStetson
-  category: Roles
+  category: Head
   cost: 1
   exclusive: true
   requirements:
@@ -581,6 +704,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -597,6 +721,10 @@
         - NCRVeteranRanger
         - NCRRO
         - NCRCitizen
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement
       department: NCR
       min: 144000 # 40 hours, work for that hat!
@@ -618,6 +746,7 @@
         - NCRDoctor
         - NCRExecutiveOfficer
         - NCRPlatoonLeader
+        - NCRVertibirdPilot
         - NCRNCO
         - NCREngineer
         - NCRMedic
@@ -634,6 +763,10 @@
         - NCRVeteranRanger
         - NCRCitizen
         - NCRTrader
+
+        - NCRMilitaryPoliceCaptain
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceRecruit
     - !type:CharacterDepartmentTimeRequirement
       department: NCR
       min: 144000 # 40 hours, work for that hat!
@@ -649,9 +782,9 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-     tracker: NCRVeteranRanger
-     min: 216000
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
+      min: 216000
   items:
    - N14ClothingOuterRangerFox
 
@@ -664,9 +797,9 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-     tracker: NCRVeteranRanger
-     min: 108000
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
+      min: 108000
   items:
    - N14ClothingOuterRangerElite
 
@@ -703,8 +836,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadHatRangerHelmetFox
@@ -718,8 +851,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadHatRangerHelmetPrice
@@ -733,8 +866,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingOuterRangerWeathered
@@ -748,8 +881,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingOuterRangerPrice
@@ -789,8 +922,8 @@
         - NCRVeteranRanger
         - NCRFieldRanger # Purely cosmetic, goes over armor
         - NCRCitizen
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingNeckSaltRunnerDuster
@@ -804,8 +937,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHatSaltRunnerHelmet
@@ -820,8 +953,8 @@
       jobs:
         - NCRVeteranRanger
         - NCRFieldRanger # Purely cosmetic, identical to field ranger mask
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHatSaltRunnerMask
@@ -835,8 +968,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadFourLeafRangerHelmet
@@ -850,8 +983,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadHighlandRangerHelmet
@@ -865,8 +998,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadCanOpenerRangerHelmet
@@ -880,8 +1013,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 46800 # 780 minutes
   items:
     - N14ClothingHeadTheDevoutRangerHelmet
@@ -895,8 +1028,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadDemoExpertRangerHelmet
@@ -910,8 +1043,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingHeadHardCaseRangerHelmet
@@ -926,8 +1059,8 @@
       jobs:
         - NCRVeteranRanger
         - NCRFieldRanger # Purely cosmetic, identical to field ranger mask
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 46800 # 780 minutes
   items:
     - N14ClothingHatTheDevoutMask
@@ -941,8 +1074,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingOuterCaliforniaGirlVetRangerRiotArmor
@@ -956,8 +1089,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingOuterCanOpenerVetRangerRiotArmor
@@ -971,8 +1104,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingOuterDemoExpertVetRangerRiotArmor
@@ -986,8 +1119,8 @@
     - !type:CharacterJobRequirement
       jobs:
         - NCRVeteranRanger
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 46800 # 780 minutes
   items:
     - N14ClothingOuterTheDevoutVetRangerRiotArmor
@@ -1003,8 +1136,8 @@
         - NCRVeteranRanger
         - NCRFieldRanger
         - NCRCitizen
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingNeckHighlandRangerDuster
@@ -1020,8 +1153,8 @@
         - NCRVeteranRanger
         - NCRFieldRanger
         - NCRCitizen
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingNeckFourLeafDuster
@@ -1037,8 +1170,8 @@
         - NCRVeteranRanger
         - NCRFieldRanger
         - NCRCitizen
-    - !type:CharacterPlaytimeRequirement
-      tracker: NCRVeteranRanger
+    - !type:CharacterDepartmentTimeRequirement
+      department: Rangers
       min: 72000 # 1200 minutes
   items:
     - N14ClothingNeckCaliforniaGirlDuster
@@ -1072,3 +1205,127 @@
         - NCRVeteranRanger
   items:
     - ClothingMaskGasRangerBroken
+
+- type: loadout
+  id: ClothingBeltNCRPouches
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRCommander
+        - NCRDoctor
+        - NCRExecutiveOfficer
+        - NCRPlatoonLeader
+        - NCRVertibirdPilot
+        - NCRNCO
+        - NCREngineer
+        - NCRMedic
+        - NCRWS
+        - NCRHeavyTrooper
+        - NCRCadet
+
+        - NCRMilitaryPoliceRecruit
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceCaptain
+        - NCRRangerRecruit
+        - NCRFieldRanger
+        - NCRPatrolRanger
+        - NCRVeteranRanger
+        - NCRRO
+  items:
+    - ClothingBeltNCRPouches
+
+- type: loadout
+  id: ClothingBeltNCRBandolier
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRCommander
+        - NCRDoctor
+        - NCRExecutiveOfficer
+        - NCRPlatoonLeader
+        - NCRVertibirdPilot
+        - NCRNCO
+        - NCREngineer
+        - NCRMedic
+        - NCRWS
+        - NCRHeavyTrooper
+        - NCRCadet
+
+        - NCRMilitaryPoliceRecruit
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceCaptain
+        - NCRRangerRecruit
+        - NCRFieldRanger
+        - NCRPatrolRanger
+        - NCRVeteranRanger
+        - NCRRO
+  items:
+    - ClothingBeltNCRBandolier
+
+- type: loadout
+  id: ClothingBeltMilitary
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRCommander
+        - NCRDoctor
+        - NCRExecutiveOfficer
+        - NCRPlatoonLeader
+        - NCRVertibirdPilot
+        - NCRNCO
+        - NCREngineer
+        - NCRMedic
+        - NCRWS
+        - NCRHeavyTrooper
+        - NCRCadet
+
+        - NCRMilitaryPoliceRecruit
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceCaptain
+        - NCRRangerRecruit
+        - NCRFieldRanger
+        - NCRPatrolRanger
+        - NCRVeteranRanger
+        - NCRRO
+  items:
+    - ClothingBeltMilitary
+
+- type: loadout
+  id: ClothingBeltRevolver
+  category: Roles
+  cost: 1
+  exclusive: true
+  requirements:
+    - !type:CharacterJobRequirement
+      jobs:
+        - NCRCommander
+        - NCRDoctor
+        - NCRExecutiveOfficer
+        - NCRPlatoonLeader
+        - NCRVertibirdPilot
+        - NCRNCO
+        - NCREngineer
+        - NCRMedic
+        - NCRWS
+        - NCRHeavyTrooper
+        - NCRCadet
+
+        - NCRMilitaryPoliceRecruit
+        - NCRMilitaryPoliceSergeant
+        - NCRMilitaryPoliceCaptain
+        - NCRRangerRecruit
+        - NCRFieldRanger
+        - NCRPatrolRanger
+        - NCRVeteranRanger
+        - NCRRO
+  items:
+    - ClothingBeltRevolver

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Content.Server._Misfits.Expeditions.Generation;
 using Content.Shared._Misfits.Expeditions;
 using Robust.Shared.GameObjects;
 using Robust.Shared.IoC;
 using Robust.Shared.Map;
 using Robust.Shared.Map.Components;
 using Robust.Shared.Maths;
+using Robust.Shared.Prototypes;
 using Content.Server.Decals;
 
 // #Misfits Add - Procedural underground expedition map generator (Vault / Sewer / Metro themes)
@@ -20,19 +22,16 @@ namespace Content.Server._Misfits.Expeditions;
 /// Supports three themes: Vault (pre-war concrete), Sewer (brick tunnels + dirty water),
 /// Metro (abandoned subway infrastructure).
 ///
-/// Generation pipeline:
-///   Phase A  — Room placement (faction hubs → central → standard rooms, theme-sized)
-///   Phase B  — Corridor carving (minimum spanning tree, 2-tile-wide L-shaped)
-///   Phase B5 — Doorway marking (corridor cells adjacent to room interior)
-///   Phase C  — Sewer water-channel carving (Sewer theme only)
-///   Phase D  — Tile painting (ALL cells tiled; background uses FloorAsteroidSand)
-///   Phase E  — Entity spawning (WallRock fill, slanted room walls, doors, furniture, mobs)
+/// Generation pipeline covers room placement, corridor carving, doorway marking,
+/// water-channel carving, tile painting, and entity spawning.
 /// </summary>
 public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 {
     [Dependency] private readonly ITileDefinitionManager _tileDefManager = default!;
     [Dependency] private readonly SharedMapSystem _mapSystem = default!;
     [Dependency] private readonly DecalSystem _decalSystem = default!;
+    [Dependency] private readonly ExpeditionBossSystem _bosses = default!;
+    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
 
     // ─────────────────────────────────────────────────────────────────────────
     // Tile IDs
@@ -62,17 +61,17 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // private const string TileMetroConcAlt    = "FloorMS13ConcreteIndustrialAlt";
 
     // Still-active tile consts (referenced directly in PaintTiles/PickRoomTile)
-    private const string TileRubble          = "FloorRubbleIndoors";
-    private const string TileSewerGrate      = "FloorMS13MetalGrate";
-    private const string TileWaterDeep       = "WaterDeep";
-    private const string TileGrate           = "FloorMS13MetalGrate";
+    private const string TileRubble = "FloorRubbleIndoors";
+    private const string TileSewerGrate = "FloorMS13MetalGrate";
+    private const string TileWaterDeep = "WaterDeep";
+    private const string TileGrate = "FloorMS13MetalGrate";
 
     // ─────────────────────────────────────────────────────────────────────────
     // Wall entity IDs
     // ─────────────────────────────────────────────────────────────────────────
 
     // #Misfits Fix - Use indestructible variant so players can't break out of the dungeon
-    private const string WallRockFill        = "N14WallRockSlantedIndestructible";
+    private const string WallRockFill = "N14WallRockSlantedIndestructible";
 
     // #Misfits Removed - Wall/door consts now live in ThemeProfile.TilePalette (UndergroundThemeProfiles.cs)
     // private const string WallVaultRoom       = "N14WallConcreteSlantedIndestructible";
@@ -80,7 +79,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // private const string WallSewerRoom       = "N14WallBrickSlantedIndestructible";
     // private const string WallSewerHub        = "N14WallBrickGraySlantedIndestructible";
     // private const string WallMetroRoom       = "N14WallDungeonSlantedIndestructible";
-    // private const string WallMetroHub        = "N14WallCombSlantedIndestructible";
+    // private const string WallMetroHub        = "N14WallIndustrialRustSlantedIndestructible";
     // private const string DoorVaultHub        = "N14DoorMetalReinforced";
     // private const string DoorVaultRoom       = "N14DoorBunker";
     // private const string DoorSewerHub        = "N14DoorMakeshift";
@@ -92,7 +91,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // Sewer water entity
     // ─────────────────────────────────────────────────────────────────────────
 
-    private const string WaterSewerEntity    = "N14FloorWaterSewerMedium";
+    private const string WaterSewerEntity = "N14FloorWaterSewerMedium";
 
     // #Misfits Removed - All FurnVault*, FurnSewer*, FurnMetro* static arrays replaced by
     // ThemeProfile.FurniturePools (UndergroundThemeProfiles.cs). Profile lookup via
@@ -107,15 +106,63 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     */
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Mob entity pools — (proto, relativeWeight) per theme
+    // Expedition-wide hostile population
     // ─────────────────────────────────────────────────────────────────────────
 
-    // #Misfits Change - Faction sub-groups to prevent inter-faction infighting
-    // Each room rolls one sub-group so all mobs in that room share the same faction.
-    // #Misfits Removed - Mob groups now live in ThemeProfile.MobGroups (UndergroundThemeProfiles.cs)
-    // private static readonly (string, int)[][] MobsVaultGroups = { ... };
-    // private static readonly (string, int)[][] MobsSewerGroups = { ... };
-    // private static readonly (string, int)[][] MobsMetroGroups = { ... };
+    private const int HodgepodgeExpeditionChancePercent = 15;
+
+    private sealed class ExpeditionPopulationState
+    {
+        public MobThemeDefinition Theme { get; }
+        public int DeathclawLimit { get; }
+        public int BehemothLimit { get; }
+        public int MaypoleLimit { get; }
+        public int DeathclawsSpawned { get; private set; }
+        public int BehemothsSpawned { get; private set; }
+        public int MaypolesSpawned { get; private set; }
+
+        public ExpeditionPopulationState(MobThemeDefinition theme, int partySize)
+        {
+            Theme = theme;
+            var largeParty = partySize >= 5;
+            DeathclawLimit = largeParty ? 18 : 12;
+            BehemothLimit = largeParty ? 5 : 3;
+            MaypoleLimit = largeParty ? 3 : 2;
+        }
+
+        public bool CanReserve(string prototype)
+        {
+            if (prototype.StartsWith("N14MobDeathclaw", StringComparison.Ordinal))
+            {
+                if (DeathclawsSpawned >= DeathclawLimit)
+                    return false;
+            }
+
+            if (prototype == "N14MobBehemoth")
+            {
+                if (BehemothsSpawned >= BehemothLimit)
+                    return false;
+            }
+
+            if (prototype == "N14MobGhoulMaypole")
+            {
+                if (MaypolesSpawned >= MaypoleLimit)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public void Reserve(string prototype)
+        {
+            if (prototype.StartsWith("N14MobDeathclaw", StringComparison.Ordinal))
+                DeathclawsSpawned++;
+            if (prototype == "N14MobBehemoth")
+                BehemothsSpawned++;
+            if (prototype == "N14MobGhoulMaypole")
+                MaypolesSpawned++;
+        }
+    }
 
     // #Misfits Removed - Room-specific Vault furniture arrays replaced by ThemeProfile.FurniturePools
     /*
@@ -174,9 +221,8 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // #Misfits Fix - Returns hub positions so the expedition system can spawn players at faction hubs
     public List<(Vector2i position, int factionIndex)> GenerateMap(UndergroundGenParams p, EntityUid gridUid, MapGridComponent grid)
     {
-        var rng = new Random(p.Seed);
-        int W   = p.GridWidth;
-        int H   = p.GridHeight;
+        int W = p.GridWidth;
+        int H = p.GridHeight;
 
         // ── Resolve structured generation profile + environmental state ─────────
         var profile = UndergroundThemeProfiles.GetProfile(p.Theme);
@@ -192,12 +238,13 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             selectedStates = new List<EnvironmentalState>();
             if (profile.ValidEnvironmentalStates.Count > 0)
             {
-                selectedStates.Add(profile.ValidEnvironmentalStates[rng.Next(profile.ValidEnvironmentalStates.Count)]);
+                var identityRandom = ExpeditionSeedStreams.Create(p.Seed, "identity");
+                selectedStates.Add(profile.ValidEnvironmentalStates[identityRandom.Next(profile.ValidEnvironmentalStates.Count)]);
                 // 30% chance to add a second, distinct state
-                if (profile.ValidEnvironmentalStates.Count > 1 && rng.Next(100) < 30)
+                if (profile.ValidEnvironmentalStates.Count > 1 && identityRandom.Next(100) < 30)
                 {
                     EnvironmentalState second;
-                    do { second = profile.ValidEnvironmentalStates[rng.Next(profile.ValidEnvironmentalStates.Count)]; }
+                    do { second = profile.ValidEnvironmentalStates[identityRandom.Next(profile.ValidEnvironmentalStates.Count)]; }
                     while (second == selectedStates[0]);
                     selectedStates.Add(second);
                 }
@@ -205,40 +252,70 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         }
 
         var envMods = UndergroundThemeProfiles.MergeModifiers(selectedStates);
+        var plan = UndergroundExpeditionPlanBuilder.Build(
+            p,
+            profile,
+            selectedStates,
+            ExpeditionSeedStreams.Create(p.Seed, "topology"));
+        var planValidation = UndergroundExpeditionPlanBuilder.Validate(plan);
+        if (!planValidation.IsValid)
+            throw new InvalidOperationException($"Invalid {p.Theme} expedition plan: {string.Join("; ", planValidation.Errors)}");
 
-        // Phase A: place rooms
-        var cellMap = new CellType[W, H];
-        var rooms   = new List<RoomDef>();
+        CellType[,]? cellMap = null;
+        List<RoomDef>? rooms = null;
+        Dictionary<string, RoomDef>? roomsById = null;
+        const int maxGeometryAttempts = 5;
+        string geometryFailure = "no placement attempt ran";
 
-        PlaceFactionHubs(cellMap, rooms, p, rng, W, H);
-        PlaceCentralRoom(cellMap, rooms, p, rng, W, H);
+        for (var attempt = 0; attempt < maxGeometryAttempts; attempt++)
+        {
+            var attemptMap = new CellType[W, H];
+            var attemptRooms = new List<RoomDef>();
+            var attemptRoomsById = new Dictionary<string, RoomDef>();
+            var geometryRandom = ExpeditionSeedStreams.Create(p.Seed, "geometry", attempt);
+            var zones = PartitionMapIntoZones(W, H, plan.Rooms.Count(room => room.RoomType == RoomType.FactionHub), geometryRandom);
 
-        // Phase A.5: BSP zone division — restrict room types to spatially meaningful zones
-        var zones = PartitionMapIntoZones(W, H, p.HubCount, rng);
-        PlaceStandardRooms(cellMap, rooms, p, profile, rng, W, H, zones);
+            if (!TryPlacePlannedRooms(attemptMap, attemptRooms, attemptRoomsById, plan, profile,
+                    geometryRandom, W, H, zones, p.MinRooms, out geometryFailure))
+                continue;
 
-        // Phase B: 2-tile-wide MST corridors + profile-driven branch/loop passes
-        CarveCorridors(cellMap, rooms, profile, rng, W, H);
+            CarvePlannedCorridors(attemptMap, plan, attemptRoomsById, profile, geometryRandom, W, H);
+            if (p.Theme != UndergroundTheme.Sewer && envMods.WaterChannelChanceOverride > 0)
+            {
+                CarveSewerWaterChannels(attemptMap, ExpeditionSeedStreams.Create(p.Seed, "environment", attempt), W, H,
+                    forceCarve: false,
+                    overrideChance: envMods.WaterChannelChanceOverride);
+            }
+            if (!TryValidateRealizedPlan(attemptMap, plan, attemptRoomsById, p.MinRooms, W, H, out geometryFailure))
+                continue;
 
-        // Phase B5: identify corridor→room threshold cells — get door entities in Phase E
-        var doorways = MarkDoorways(cellMap, W, H);
+            cellMap = attemptMap;
+            rooms = attemptRooms;
+            roomsById = attemptRoomsById;
+            break;
+        }
 
-        // #Misfits Add - Phase B6: System 5 door validation — remove structurally invalid doorways
+        if (cellMap == null || rooms == null || roomsById == null)
+            throw new InvalidOperationException(
+                $"Unable to realize {p.Theme} expedition seed {p.Seed} after {maxGeometryAttempts} attempts: {geometryFailure}");
+
+        var doorways = MarkDoorways(cellMap, rooms, W, H);
+
         ValidateDoors(doorways, cellMap, rooms, W, H);
 
-        // Phase C: sewer water channels (Sewer theme always; other themes if Flooded state overrides)
-        if (p.Theme == UndergroundTheme.Sewer || envMods.WaterChannelChanceOverride > 0)
-            CarveSewerWaterChannels(cellMap, rng, W, H,
-                forceCarve: p.Theme == UndergroundTheme.Sewer,
-                overrideChance: envMods.WaterChannelChanceOverride);
+        ValidateGeneratedLayout(cellMap, rooms, doorways, profile, p, plan, roomsById, W, H);
 
-        // Phase D: tile every cell (including background; required for atmos sealing)
         // #Misfits Add - WFC-style per-room tile map with primary/accent/edge and neighbor smoothing
-        var roomTileMap = BuildRoomTileMapWFC(rooms, profile, cellMap, rng, W, H);
-        PaintTiles(cellMap, gridUid, grid, profile, envMods, rng, W, H, roomTileMap);
+        var tileRandom = ExpeditionSeedStreams.Create(p.Seed, "tiles");
+        var roomTileMap = BuildRoomTileMapWFC(rooms, profile, cellMap, tileRandom, W, H);
+        PaintTiles(cellMap, gridUid, grid, profile, envMods, tileRandom, W, H, roomTileMap);
 
-        // Phase E: spawn all entities
-        SpawnEntities(cellMap, rooms, doorways, gridUid, grid, profile, envMods, p.DifficultyTier, rng, W, H);
+        var objectiveRoom = roomsById[plan.ObjectiveRoomId];
+        SpawnEntities(cellMap, rooms, doorways, gridUid, grid, profile, envMods, p.DifficultyTier, p.PartySize,
+            ExpeditionSeedStreams.Create(p.Seed, "entities"), W, H, objectiveRoom, plan, roomsById);
+
+        Log.Info($"[N14 ProcGen] identity='{plan.Identity.SiteType}', failure='{plan.Identity.FailureCause}', " +
+                 $"state='{plan.Identity.CurrentState}', objective={objectiveRoom.RoomType}, seed={p.Seed}");
 
         // #Misfits Fix - Return hub positions so the system can place exits and spawn players correctly
         return rooms
@@ -247,8 +324,313 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             .ToList();
     }
 
+    private static bool TryPlacePlannedRooms(
+        CellType[,] cellMap,
+        List<RoomDef> rooms,
+        Dictionary<string, RoomDef> roomsById,
+        ExpeditionGenerationPlan plan,
+        ThemeProfile profile,
+        Random random,
+        int W,
+        int H,
+        List<MapZone> zones,
+        int minimumRooms,
+        out string failure)
+    {
+        var hubs = plan.Rooms.Where(room => room.RoomType == RoomType.FactionHub).ToList();
+        for (var i = 0; i < hubs.Count; i++)
+        {
+            var hubW = random.Next(7, 11);
+            var hubH = random.Next(7, 11);
+            var (x0, y0, x1, y1) = GetHubZone(i, W, H);
+            RoomDef? placedHub = null;
+            for (var attempt = 0; attempt < 40; attempt++)
+            {
+                var maxX = x1 - hubW;
+                var maxY = y1 - hubH;
+                if (maxX < x0 || maxY < y0)
+                    break;
+                var candidate = new RoomDef
+                {
+                    X = random.Next(x0, maxX + 1),
+                    Y = random.Next(y0, maxY + 1),
+                    W = hubW,
+                    H = hubH,
+                    RoomType = RoomType.FactionHub,
+                    FactionIndex = hubs[i].FactionIndex,
+                };
+                if (rooms.Any(room => room.Overlaps(candidate, 2)))
+                    continue;
+                placedHub = candidate;
+                break;
+            }
+
+            if (placedHub == null)
+            {
+                failure = $"could not place hub '{hubs[i].Id}'";
+                return false;
+            }
+            rooms.Add(placedHub);
+            roomsById[hubs[i].Id] = placedHub;
+            PaintRoom(cellMap, placedHub, CellType.FactionHub, W, H);
+        }
+
+        foreach (var planned in plan.Rooms.Where(room => room.RoomType != RoomType.FactionHub))
+        {
+            var parents = plan.Connections
+                .Where(edge => edge.From == planned.Id || edge.To == planned.Id)
+                .Select(edge => edge.From == planned.Id ? edge.To : edge.From)
+                .Where(roomsById.ContainsKey)
+                .Select(id => roomsById[id])
+                .ToList();
+
+            RoomDef? best = null;
+            var bestScore = int.MinValue;
+            for (var candidateIndex = 0; candidateIndex < 160; candidateIndex++)
+            {
+                int roomW;
+                int roomH;
+                if (planned.RoomType == RoomType.Central)
+                {
+                    roomW = random.Next(12, 20);
+                    roomH = random.Next(12, 20);
+                }
+                else
+                {
+                    (roomW, roomH) = GetRoomDimensionsFromProfile(profile, planned.RoomType, random,
+                        Math.Clamp((float) planned.ZoneRole / (float) ZoneRole.Hazard, 0f, 1f));
+                }
+                if (roomW > W - 6 || roomH > H - 6)
+                    continue;
+
+                var matchingZones = zones.Where(zone => zone.Role == planned.ZoneRole).ToList();
+                int x;
+                int y;
+                if (candidateIndex < 120 && matchingZones.Count > 0)
+                {
+                    var zone = matchingZones[random.Next(matchingZones.Count)];
+                    var maxX = zone.X + zone.W - roomW;
+                    var maxY = zone.Y + zone.H - roomH;
+                    if (maxX < zone.X || maxY < zone.Y)
+                        continue;
+                    x = random.Next(zone.X, maxX + 1);
+                    y = random.Next(zone.Y, maxY + 1);
+                }
+                else
+                {
+                    var maxX = W - roomW - 3;
+                    var maxY = H - roomH - 3;
+                    if (maxX < 3 || maxY < 3)
+                        continue;
+                    x = random.Next(3, maxX + 1);
+                    y = random.Next(3, maxY + 1);
+                }
+
+                var candidate = new RoomDef { X = x, Y = y, W = roomW, H = roomH, RoomType = planned.RoomType };
+                if (rooms.Any(room => room.Overlaps(candidate, 2)))
+                    continue;
+
+                var score = ScorePlacement(candidate.Center.cx, candidate.Center.cy, planned.RoomType, rooms, profile, zones, W, H,
+                    planned.ZoneRole);
+                foreach (var parent in parents)
+                {
+                    var distance = Math.Abs(candidate.Center.cx - parent.Center.cx) + Math.Abs(candidate.Center.cy - parent.Center.cy);
+                    var idealDistance = (candidate.W + candidate.H + parent.W + parent.H) / 4 + 8;
+                    score -= Math.Abs(distance - idealDistance);
+                }
+                if (planned.IsObjective)
+                    score -= (Math.Abs(candidate.Center.cx - W / 2) + Math.Abs(candidate.Center.cy - H / 2)) / 2;
+
+                if (score <= bestScore)
+                    continue;
+                best = candidate;
+                bestScore = score;
+            }
+
+            if (best == null)
+            {
+                if (!planned.Required)
+                    continue;
+                failure = $"could not place required room '{planned.Id}' ({planned.RoomType})";
+                return false;
+            }
+
+            rooms.Add(best);
+            roomsById[planned.Id] = best;
+            PaintRoom(cellMap, best, CellType.Room, W, H);
+        }
+
+        var interiorCount = rooms.Count(room => room.RoomType != RoomType.FactionHub);
+        if (interiorCount < minimumRooms)
+        {
+            failure = $"placed {interiorCount} interior rooms, below minimum {minimumRooms}";
+            return false;
+        }
+
+        failure = string.Empty;
+        return true;
+    }
+
+    private static void CarvePlannedCorridors(
+        CellType[,] cellMap,
+        ExpeditionGenerationPlan plan,
+        IReadOnlyDictionary<string, RoomDef> roomsById,
+        ThemeProfile profile,
+        Random random,
+        int W,
+        int H)
+    {
+        foreach (var connection in plan.Connections)
+        {
+            if (!roomsById.TryGetValue(connection.From, out var from) ||
+                !roomsById.TryGetValue(connection.To, out var to))
+                continue;
+
+            // Wide links break up one-tile firing funnels and give both players
+            // and NPCs room to pass. A three-wide link deliberately has an open
+            // threshold; door marking below only services one/two-wide links.
+            var width = RollCorridorWidth(random);
+            var horizontalFirst = random.Next(2) == 0;
+            CarveLCorridor(cellMap, from.Center.cx, from.Center.cy, to.Center.cx, to.Center.cy,
+                random, W, H, width, horizontalFirst);
+
+            if (plan.Theme == UndergroundTheme.Sewer && width >= 3 &&
+                IsSewerWaterConnection(plan, connection))
+            {
+                CarveWaterLCorridor(cellMap, from.Center.cx, from.Center.cy, to.Center.cx, to.Center.cy,
+                    horizontalFirst, W, H);
+            }
+        }
+    }
+
+    private static bool IsSewerWaterConnection(
+        ExpeditionGenerationPlan plan,
+        PlannedExpeditionConnection connection)
+    {
+        var from = plan.Rooms.First(room => room.Id == connection.From).RoomType;
+        var to = plan.Rooms.First(room => room.Id == connection.To).RoomType;
+        var fromIsHydraulic = from is RoomType.SewerPump or RoomType.SewerGrotto or RoomType.SewerNest;
+        var toIsHydraulic = to is RoomType.SewerPump or RoomType.SewerGrotto or RoomType.SewerNest;
+        return from == RoomType.SewerTunnel || to == RoomType.SewerTunnel ||
+               fromIsHydraulic && toIsHydraulic;
+    }
+
+    /// <summary>
+    /// Converts the center of a three-wide sewer corridor into a continuous
+    /// wastewater channel and its shoulders into dry metal-grate walkways.
+    /// Room cells are never converted, so chambers remain usable and the water
+    /// network follows the same semantic edges as tunnels and pump rooms.
+    /// </summary>
+    private static void CarveWaterLCorridor(
+        CellType[,] cellMap,
+        int ax,
+        int ay,
+        int bx,
+        int by,
+        bool horizontalFirst,
+        int W,
+        int H)
+    {
+        if (horizontalFirst)
+        {
+            CarveWaterHLine(cellMap, ax, bx, ay, W, H);
+            CarveWaterVLine(cellMap, bx, ay, by, W, H);
+        }
+        else
+        {
+            CarveWaterVLine(cellMap, ax, ay, by, W, H);
+            CarveWaterHLine(cellMap, ax, bx, by, W, H);
+        }
+    }
+
+    private static void CarveWaterHLine(CellType[,] cellMap, int x0, int x1, int y, int W, int H)
+    {
+        for (var x = Math.Min(x0, x1); x <= Math.Max(x0, x1); x++)
+        {
+            TrySetPlatform(cellMap, x, y - 1, W, H);
+            TrySetWater(cellMap, x, y, W, H);
+            TrySetPlatform(cellMap, x, y + 1, W, H);
+        }
+    }
+
+    private static void CarveWaterVLine(CellType[,] cellMap, int x, int y0, int y1, int W, int H)
+    {
+        for (var y = Math.Min(y0, y1); y <= Math.Max(y0, y1); y++)
+        {
+            TrySetPlatform(cellMap, x - 1, y, W, H);
+            TrySetWater(cellMap, x, y, W, H);
+            TrySetPlatform(cellMap, x + 1, y, W, H);
+        }
+    }
+
+    private static void TrySetWater(CellType[,] cellMap, int x, int y, int W, int H)
+    {
+        if (InBounds(x, y, W, H) && cellMap[x, y] == CellType.Corridor)
+            cellMap[x, y] = CellType.WaterChannel;
+    }
+
+    private static void TrySetPlatform(CellType[,] cellMap, int x, int y, int W, int H)
+    {
+        if (InBounds(x, y, W, H) && cellMap[x, y] == CellType.Corridor)
+            cellMap[x, y] = CellType.Platform;
+    }
+
+    private static bool TryValidateRealizedPlan(
+        CellType[,] cellMap,
+        ExpeditionGenerationPlan plan,
+        IReadOnlyDictionary<string, RoomDef> roomsById,
+        int minimumRooms,
+        int W,
+        int H,
+        out string failure)
+    {
+        foreach (var planned in plan.Rooms.Where(room => room.Required))
+        {
+            if (!roomsById.ContainsKey(planned.Id))
+            {
+                failure = $"required room '{planned.Id}' was not realized";
+                return false;
+            }
+        }
+        if (!roomsById.ContainsKey(plan.EntryRoomId) || !roomsById.ContainsKey(plan.ObjectiveRoomId))
+        {
+            failure = "entry or objective room was not realized";
+            return false;
+        }
+        if (roomsById.Values.Count(room => room.RoomType != RoomType.FactionHub) < minimumRooms)
+        {
+            failure = $"realized room count is below {minimumRooms}";
+            return false;
+        }
+
+        var reached = new HashSet<(int x, int y)>();
+        var queue = new Queue<(int x, int y)>();
+        var start = roomsById[plan.EntryRoomId].Center;
+        TryReach(cellMap, start.cx, start.cy, W, H, reached, queue);
+        while (queue.Count > 0)
+        {
+            var (x, y) = queue.Dequeue();
+            TryReach(cellMap, x + 1, y, W, H, reached, queue);
+            TryReach(cellMap, x - 1, y, W, H, reached, queue);
+            TryReach(cellMap, x, y + 1, W, H, reached, queue);
+            TryReach(cellMap, x, y - 1, W, H, reached, queue);
+        }
+
+        foreach (var planned in plan.Rooms.Where(room => room.Required))
+        {
+            if (!reached.Contains(roomsById[planned.Id].Center))
+            {
+                failure = $"required room '{planned.Id}' is unreachable from entry";
+                return false;
+            }
+        }
+
+        failure = string.Empty;
+        return true;
+    }
+
     // =========================================================================
-    // Phase A — Room Placement
+    // Room placement
     // =========================================================================
 
     private static void PlaceFactionHubs(
@@ -291,11 +673,11 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         int thirdH = H / 3;
         return idx switch
         {
-            0 => (margin,     margin,      thirdW,     thirdH),
-            1 => (W - thirdW, margin,      W - margin, thirdH),
-            2 => (W - thirdW, H - thirdH,  W - margin, H - margin),
-            3 => (margin,     H - thirdH,  thirdW,     H - margin),
-            _ => (margin,     margin,      W / 2,      H / 2),
+            0 => (margin, margin, thirdW, thirdH),
+            1 => (W - thirdW, margin, W - margin, thirdH),
+            2 => (W - thirdW, H - thirdH, W - margin, H - margin),
+            3 => (margin, H - thirdH, thirdW, H - margin),
+            _ => (margin, margin, W / 2, H / 2),
         };
     }
 
@@ -362,8 +744,26 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             {
                 var (rw, rh) = GetRoomDimensionsFromProfile(profile, anchorType, rng);
                 if (rw > W - 6 || rh > H - 6) continue;
-                int x = rng.Next(3, W - rw - 3);
-                int y = rng.Next(3, H - rh - 3);
+
+                var targetRole = GetZoneRoleForRoomType(anchorType, profile.Theme);
+                var matchingZones = zones.Where(z => z.Role == targetRole).ToList();
+                int x;
+                int y;
+                if (matchingZones.Count > 0)
+                {
+                    var zone = matchingZones[rng.Next(matchingZones.Count)];
+                    int maxX = zone.X + zone.W - rw;
+                    int maxY = zone.Y + zone.H - rh;
+                    if (maxX < zone.X || maxY < zone.Y) continue;
+                    x = rng.Next(zone.X, maxX + 1);
+                    y = rng.Next(zone.Y, maxY + 1);
+                }
+                else
+                {
+                    x = rng.Next(3, W - rw - 3);
+                    y = rng.Next(3, H - rh - 3);
+                }
+
                 var cand = new RoomDef { X = x, Y = y, W = rw, H = rh, RoomType = anchorType };
                 if (rooms.Any(r => r.Overlaps(cand, 2))) continue;
                 rooms.Add(cand);
@@ -412,7 +812,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                         var cand = new RoomDef { X = x, Y = y, W = rw, H = rh, RoomType = roomType };
                         if (rooms.Any(r => r.Overlaps(cand, 2))) continue;
 
-                        int score = ScorePlacement(x + rw / 2, y + rh / 2, roomType, rooms, profile, W, H);
+                        int score = ScorePlacement(x + rw / 2, y + rh / 2, roomType, rooms, profile, zones, W, H);
                         if (score > bestScore || (score == bestScore && rng.Next(2) == 0))
                         {
                             bestScore = score;
@@ -431,7 +831,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                     var cand = new RoomDef { X = x, Y = y, W = rw, H = rh, RoomType = roomType };
                     if (rooms.Any(r => r.Overlaps(cand, 2))) continue;
 
-                    int score = ScorePlacement(x + rw / 2, y + rh / 2, roomType, rooms, profile, W, H);
+                    int score = ScorePlacement(x + rw / 2, y + rh / 2, roomType, rooms, profile, zones, W, H);
                     if (score > bestScore || (score == bestScore && rng.Next(2) == 0))
                     {
                         bestScore = score;
@@ -472,7 +872,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
         int total = 0;
         foreach (var (_, w) in filtered) total += w;
-        int roll  = rng.Next(total);
+        int roll = rng.Next(total);
         int cumul = 0;
         foreach (var (type, weight) in filtered)
         {
@@ -496,10 +896,10 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         {
             // Scale dimension ranges using depth factor (near hub = tighter/smaller range)
             // #Misfits Fix - Inline lerp: MathF.Lerp not available pre-.NET 9
-            int scaledMinW = (int)MathF.Round(def.MinW + (def.MinW * 0.7f - def.MinW) * (1f - depthFactor));
-            int scaledMaxW = (int)MathF.Round(def.MaxW * 0.7f + (def.MaxW - def.MaxW * 0.7f) * depthFactor);
-            int scaledMinH = (int)MathF.Round(def.MinH + (def.MinH * 0.7f - def.MinH) * (1f - depthFactor));
-            int scaledMaxH = (int)MathF.Round(def.MaxH * 0.7f + (def.MaxH - def.MaxH * 0.7f) * depthFactor);
+            int scaledMinW = (int) MathF.Round(def.MinW + (def.MinW * 0.7f - def.MinW) * (1f - depthFactor));
+            int scaledMaxW = (int) MathF.Round(def.MaxW * 0.7f + (def.MaxW - def.MaxW * 0.7f) * depthFactor);
+            int scaledMinH = (int) MathF.Round(def.MinH + (def.MinH * 0.7f - def.MinH) * (1f - depthFactor));
+            int scaledMaxH = (int) MathF.Round(def.MaxH * 0.7f + (def.MaxH - def.MaxH * 0.7f) * depthFactor);
             // Ensure min <= max after scaling
             scaledMinW = Math.Max(4, Math.Min(scaledMinW, scaledMaxW));
             scaledMinH = Math.Max(4, Math.Min(scaledMinH, scaledMaxH));
@@ -510,35 +910,75 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     }
 
     /// <summary>
-    /// Scores a candidate placement by checking adjacency preferences/exclusions
-    /// against already-placed rooms within Chebyshev distance 12.
-    /// Returns positive for good fits, negative for conflicts, 0 for neutral.
+    /// Scores a candidate placement using spatial role, depth, adjacency, and
+    /// duplicate-spacing terms. Hard validity remains the caller's responsibility.
     /// </summary>
-    // #Misfits Change - Replaced ScoreAdjacency: Chebyshev distance 12, +2 pref / -3 exclusion weights
+    // #Misfits Change - Semantic placement scoring for zone/depth-aware room identity
     private static int ScorePlacement(
         int cx, int cy, RoomType roomType,
-        List<RoomDef> placed, ThemeProfile profile, int W, int H)
+        List<RoomDef> placed, ThemeProfile profile, List<MapZone> zones, int W, int H,
+        ZoneRole? plannedRole = null)
     {
         var def = profile.GetRoomDef(roomType);
-        if (def == null) return 0;
 
         int score = 0;
+        var targetRole = plannedRole ?? GetZoneRoleForRoomType(roomType, profile.Theme);
+        MapZone? candidateZone = null;
+        foreach (var zone in zones)
+        {
+            if (cx >= zone.X && cx < zone.X + zone.W &&
+                cy >= zone.Y && cy < zone.Y + zone.H)
+            {
+                candidateZone = zone;
+                break;
+            }
+        }
+
+        if (candidateZone.HasValue)
+        {
+            var zone = candidateZone.Value;
+            int roleDistance = Math.Abs((int) zone.Role - (int) targetRole);
+            score += roleDistance == 0 ? 8 : -roleDistance * 3;
+
+            // Zone depth is a stronger signal than enum order when the 3x3
+            // partition cannot represent every role at a given hub count.
+            int desiredDepth = (int) targetRole;
+            score -= Math.Abs(zone.DepthFromHub - desiredDepth) * 2;
+        }
+        else
+        {
+            score -= 8;
+        }
+
+        var hubs = placed.Where(r => r.RoomType == RoomType.FactionHub).ToList();
+        if (hubs.Count > 0)
+        {
+            int nearestHubDistance = hubs.Min(hub =>
+            {
+                var (hx, hy) = hub.Center;
+                return Math.Max(Math.Abs(cx - hx), Math.Abs(cy - hy));
+            });
+
+            int maxDistance = Math.Max(W, H);
+            int normalizedDepth = nearestHubDistance * 4 / Math.Max(1, maxDistance);
+            score -= Math.Abs(normalizedDepth - (int) targetRole) * 2;
+        }
 
         foreach (var room in placed)
         {
-            // Skip hub/central — they don't participate in adjacency logic
-            if (room.RoomType == RoomType.FactionHub || room.RoomType == RoomType.Central) continue;
-
             var (rx, ry) = room.Center;
             // Chebyshev distance: max of axis deltas
             int dist = Math.Max(Math.Abs(cx - rx), Math.Abs(cy - ry));
-            if (dist > 12) continue;
+            if (dist > 16) continue;
 
-            if (def.AdjacencyPreferences.Contains(room.RoomType))
-                score += 2;
+            if (def?.AdjacencyPreferences.Contains(room.RoomType) == true)
+                score += dist <= 8 ? 3 : 1;
 
-            if (def.AdjacencyExclusions.Contains(room.RoomType))
-                score -= 3;
+            if (def?.AdjacencyExclusions.Contains(room.RoomType) == true)
+                score -= dist <= 8 ? 5 : 2;
+
+            if (room.RoomType == roomType)
+                score -= dist <= 8 ? 4 : 2;
         }
 
         return score;
@@ -649,46 +1089,46 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         switch (theme)
         {
             case UndergroundTheme.Sewer:
-            {
-                // Mix elongated and square shapes for interesting tunnel feel
-                return rng.Next(10) switch
                 {
-                    < 4 => (rng.Next(5, 9),   rng.Next(12, 22)), // tall narrow tunnel
-                    < 8 => (rng.Next(12, 22), rng.Next(5, 9)),   // wide flat tunnel
-                    _   => (rng.Next(7,  13), rng.Next(7, 13)),  // square antechamber
-                };
-            }
+                    // Mix elongated and square shapes for interesting tunnel feel
+                    return rng.Next(10) switch
+                    {
+                        < 4 => (rng.Next(5, 9), rng.Next(12, 22)), // tall narrow tunnel
+                        < 8 => (rng.Next(12, 22), rng.Next(5, 9)),   // wide flat tunnel
+                        _ => (rng.Next(7, 13), rng.Next(7, 13)),  // square antechamber
+                    };
+                }
             case UndergroundTheme.Metro:
-            {
-                // Metro platforms — predominantly long
-                return rng.Next(10) switch
                 {
-                    < 5 => (rng.Next(16, 26), rng.Next(6, 10)),  // long E/W platform
-                    < 8 => (rng.Next(6,  10), rng.Next(16, 26)), // long N/S platform
-                    _   => (rng.Next(10, 16), rng.Next(10, 16)), // standard room
-                };
-            }
+                    // Metro platforms — predominantly long
+                    return rng.Next(10) switch
+                    {
+                        < 5 => (rng.Next(16, 26), rng.Next(6, 10)),  // long E/W platform
+                        < 8 => (rng.Next(6, 10), rng.Next(16, 26)), // long N/S platform
+                        _ => (rng.Next(10, 16), rng.Next(10, 16)), // standard room
+                    };
+                }
             default: // Vault
-            {
-                return rng.Next(10) switch
                 {
-                    < 3 => (rng.Next(6, 9),   rng.Next(6, 9)),  // small storage
-                    < 7 => (rng.Next(9, 15),  rng.Next(9, 15)), // medium office/lab
-                    _   => (rng.Next(12, 18), rng.Next(10, 16)),// large command room
-                };
-            }
+                    return rng.Next(10) switch
+                    {
+                        < 3 => (rng.Next(6, 9), rng.Next(6, 9)),  // small storage
+                        < 7 => (rng.Next(9, 15), rng.Next(9, 15)), // medium office/lab
+                        _ => (rng.Next(12, 18), rng.Next(10, 16)),// large command room
+                    };
+                }
         }
     }
 
     private static void PaintRoom(CellType[,] cellMap, RoomDef room, CellType type, int W, int H)
     {
         for (int x = room.X; x < room.X + room.W && x < W; x++)
-        for (int y = room.Y; y < room.Y + room.H && y < H; y++)
-            cellMap[x, y] = type;
+            for (int y = room.Y; y < room.Y + room.H && y < H; y++)
+                cellMap[x, y] = type;
     }
 
     // =========================================================================
-    // Phase A.5 — BSP Zone Division
+    // Zone division
     // =========================================================================
 
     /// <summary>
@@ -715,38 +1155,38 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
         var zones = new List<MapZone>();
         for (int gx = 0; gx < 3; gx++)
-        for (int gy = 0; gy < 3; gy++)
-        {
-            // Manhattan distance to nearest hub corner in zone-grid space
-            int minDist = int.MaxValue;
-            foreach (var (hx, hy) in hubCorners)
+            for (int gy = 0; gy < 3; gy++)
             {
-                int d = Math.Abs(gx - hx) + Math.Abs(gy - hy);
-                if (d < minDist) minDist = d;
+                // Manhattan distance to nearest hub corner in zone-grid space
+                int minDist = int.MaxValue;
+                foreach (var (hx, hy) in hubCorners)
+                {
+                    int d = Math.Abs(gx - hx) + Math.Abs(gy - hy);
+                    if (d < minDist) minDist = d;
+                }
+
+                // Fallback if no hubs (shouldn't happen, but safe)
+                if (hubCorners.Count == 0) minDist = 2;
+
+                var role = minDist switch
+                {
+                    0 => ZoneRole.Entry,
+                    1 => ZoneRole.Transit,
+                    2 => ZoneRole.Utility,
+                    3 => ZoneRole.Secure,
+                    _ => ZoneRole.Hazard,
+                };
+
+                zones.Add(new MapZone
+                {
+                    X = margin + gx * cellW,
+                    Y = margin + gy * cellH,
+                    W = (gx == 2) ? innerW - cellW * 2 : cellW, // last column absorbs remainder
+                    H = (gy == 2) ? innerH - cellH * 2 : cellH, // last row absorbs remainder
+                    Role = role,
+                    DepthFromHub = minDist,
+                });
             }
-
-            // Fallback if no hubs (shouldn't happen, but safe)
-            if (hubCorners.Count == 0) minDist = 2;
-
-            var role = minDist switch
-            {
-                0     => ZoneRole.Entry,
-                1     => ZoneRole.Transit,
-                2     => ZoneRole.Utility,
-                3     => ZoneRole.Secure,
-                _     => ZoneRole.Hazard,
-            };
-
-            zones.Add(new MapZone
-            {
-                X = margin + gx * cellW,
-                Y = margin + gy * cellH,
-                W = (gx == 2) ? innerW - cellW * 2 : cellW, // last column absorbs remainder
-                H = (gy == 2) ? innerH - cellH * 2 : cellH, // last row absorbs remainder
-                Role = role,
-                DepthFromHub = minDist,
-            });
-        }
 
         return zones;
     }
@@ -761,35 +1201,37 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         return (theme, roomType) switch
         {
             // Vault zone assignments — familiar near entry, dangerous in center
-            (UndergroundTheme.Vault, RoomType.VaultBarracks)    => ZoneRole.Entry,
-            (UndergroundTheme.Vault, RoomType.VaultKitchen)     => ZoneRole.Transit,
+            (UndergroundTheme.Vault, RoomType.VaultBarracks) => ZoneRole.Entry,
+            (UndergroundTheme.Vault, RoomType.VaultKitchen) => ZoneRole.Transit,
             (UndergroundTheme.Vault, RoomType.VaultHydroponics) => ZoneRole.Transit,
-            (UndergroundTheme.Vault, RoomType.VaultRecreation)  => ZoneRole.Transit,
-            (UndergroundTheme.Vault, RoomType.VaultLab)         => ZoneRole.Utility,
-            (UndergroundTheme.Vault, RoomType.VaultArmory)      => ZoneRole.Utility,
-            (UndergroundTheme.Vault, RoomType.VaultOverseer)    => ZoneRole.Secure,
-            (UndergroundTheme.Vault, RoomType.VaultVault)       => ZoneRole.Secure,
-            (UndergroundTheme.Vault, RoomType.VaultReactor)     => ZoneRole.Hazard,
+            (UndergroundTheme.Vault, RoomType.VaultRecreation) => ZoneRole.Transit,
+            (UndergroundTheme.Vault, RoomType.VaultLab) => ZoneRole.Utility,
+            (UndergroundTheme.Vault, RoomType.VaultSecurity) => ZoneRole.Entry,
+            (UndergroundTheme.Vault, RoomType.VaultMaintenance) => ZoneRole.Utility,
+            (UndergroundTheme.Vault, RoomType.VaultArmory) => ZoneRole.Secure,
+            (UndergroundTheme.Vault, RoomType.VaultOverseer) => ZoneRole.Secure,
+            (UndergroundTheme.Vault, RoomType.VaultVault) => ZoneRole.Secure,
+            (UndergroundTheme.Vault, RoomType.VaultReactor) => ZoneRole.Hazard,
 
             // Sewer zone assignments — junctions near entry, nests deep
-            (UndergroundTheme.Sewer, RoomType.SewerJunction)    => ZoneRole.Entry,
-            (UndergroundTheme.Sewer, RoomType.SewerTunnel)      => ZoneRole.Transit,
-            (UndergroundTheme.Sewer, RoomType.SewerGrotto)      => ZoneRole.Transit,
-            (UndergroundTheme.Sewer, RoomType.SewerPump)        => ZoneRole.Utility,
-            (UndergroundTheme.Sewer, RoomType.SewerCamp)        => ZoneRole.Utility,
-            (UndergroundTheme.Sewer, RoomType.SewerNest)        => ZoneRole.Hazard,
+            (UndergroundTheme.Sewer, RoomType.SewerJunction) => ZoneRole.Entry,
+            (UndergroundTheme.Sewer, RoomType.SewerTunnel) => ZoneRole.Transit,
+            (UndergroundTheme.Sewer, RoomType.SewerGrotto) => ZoneRole.Transit,
+            (UndergroundTheme.Sewer, RoomType.SewerPump) => ZoneRole.Utility,
+            (UndergroundTheme.Sewer, RoomType.SewerCamp) => ZoneRole.Utility,
+            (UndergroundTheme.Sewer, RoomType.SewerNest) => ZoneRole.Hazard,
 
             // Metro zone assignments — platforms near entry, command deepest
-            (UndergroundTheme.Metro, RoomType.MetroPlatform)    => ZoneRole.Entry,
-            (UndergroundTheme.Metro, RoomType.MetroTunnel)      => ZoneRole.Transit,
+            (UndergroundTheme.Metro, RoomType.MetroPlatform) => ZoneRole.Entry,
+            (UndergroundTheme.Metro, RoomType.MetroTunnel) => ZoneRole.Transit,
             (UndergroundTheme.Metro, RoomType.MetroMaintenance) => ZoneRole.Utility,
-            (UndergroundTheme.Metro, RoomType.MetroDepot)       => ZoneRole.Secure,
-            (UndergroundTheme.Metro, RoomType.MetroCommand)     => ZoneRole.Hazard,
+            (UndergroundTheme.Metro, RoomType.MetroDepot) => ZoneRole.Secure,
+            (UndergroundTheme.Metro, RoomType.MetroCommand) => ZoneRole.Hazard,
 
             // Non-themed / structural rooms — always Entry or Transit
             (_, RoomType.FactionHub) => ZoneRole.Entry,
-            (_, RoomType.Central)    => ZoneRole.Hazard,
-            _                        => ZoneRole.Transit,
+            (_, RoomType.Central) => ZoneRole.Hazard,
+            _ => ZoneRole.Transit,
         };
     }
 
@@ -905,27 +1347,27 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         int y1 = Math.Min(H - 1, room.Y + room.H);
 
         for (int x = x0; x <= x1; x++)
-        for (int y = y0; y <= y1; y++)
-        {
-            if (cellMap[x, y] != CellType.Empty)
-                continue;
-
-            // Must be adjacent to at least one Room/Hub cell inside the room
-            foreach (var (dx, dy) in OrthoDirs)
+            for (int y = y0; y <= y1; y++)
             {
-                int nx = x + dx, ny = y + dy;
-                if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
-                if (nx < room.X || nx >= room.X + room.W ||
-                    ny < room.Y || ny >= room.Y + room.H)
+                if (cellMap[x, y] != CellType.Empty)
                     continue;
-                var ct = cellMap[nx, ny];
-                if (ct is CellType.Room or CellType.FactionHub)
+
+                // Must be adjacent to at least one Room/Hub cell inside the room
+                foreach (var (dx, dy) in OrthoDirs)
                 {
-                    results.Add((x, y));
-                    break;
+                    int nx = x + dx, ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+                    if (nx < room.X || nx >= room.X + room.W ||
+                        ny < room.Y || ny >= room.Y + room.H)
+                        continue;
+                    var ct = cellMap[nx, ny];
+                    if (ct is CellType.Room or CellType.FactionHub)
+                    {
+                        results.Add((x, y));
+                        break;
+                    }
                 }
             }
-        }
 
         return results;
     }
@@ -942,27 +1384,27 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         var results = new List<(int x, int y)>();
 
         for (int x = room.X; x < room.X + room.W && x < W; x++)
-        for (int y = room.Y; y < room.Y + room.H && y < H; y++)
-        {
-            var ct = cellMap[x, y];
-            if (ct is not (CellType.Room or CellType.FactionHub))
-                continue;
-
-            foreach (var (dx, dy) in OrthoDirs)
+            for (int y = room.Y; y < room.Y + room.H && y < H; y++)
             {
-                int nx = x + dx, ny = y + dy;
-                if (nx < 0 || ny < 0 || nx >= W || ny >= H)
+                var ct = cellMap[x, y];
+                if (ct is not (CellType.Room or CellType.FactionHub))
+                    continue;
+
+                foreach (var (dx, dy) in OrthoDirs)
                 {
-                    results.Add((x, y));
-                    break;
-                }
-                if (cellMap[nx, ny] == CellType.Empty)
-                {
-                    results.Add((x, y));
-                    break;
+                    int nx = x + dx, ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= W || ny >= H)
+                    {
+                        results.Add((x, y));
+                        break;
+                    }
+                    if (cellMap[nx, ny] == CellType.Empty)
+                    {
+                        results.Add((x, y));
+                        break;
+                    }
                 }
             }
-        }
 
         return results;
     }
@@ -1035,7 +1477,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     }
 
     // =========================================================================
-    // Phase B — Corridor Carving (minimum spanning tree, 2-tile-wide)
+    // Corridor carving (legacy generic path)
     // =========================================================================
 
     // #Misfits Change - CarveCorridors now accepts ThemeProfile for branch/loop post-passes
@@ -1045,14 +1487,14 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         if (rooms.Count < 2) return;
 
         // ── Pass A: MST — connect every room via minimum spanning tree ───────
-        var connected   = new List<RoomDef> { rooms[0] };
+        var connected = new List<RoomDef> { rooms[0] };
         var unconnected = new List<RoomDef>(rooms.Skip(1));
 
         while (unconnected.Count > 0)
         {
             RoomDef? bestFrom = null;
-            RoomDef? bestTo   = null;
-            float    bestDist = float.MaxValue;
+            RoomDef? bestTo = null;
+            float bestDist = float.MaxValue;
 
             foreach (var from in connected)
             {
@@ -1069,14 +1511,14 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
             var (ax, ay) = bestFrom.Center;
             var (bx, by) = bestTo.Center;
-            CarveLCorridor(cellMap, ax, ay, bx, by, rng, W, H);
+            CarveLCorridor(cellMap, ax, ay, bx, by, rng, W, H, RollCorridorWidth(rng));
 
             connected.Add(bestTo!);
             unconnected.Remove(bestTo!);
         }
 
         // ── Pass B: Branch corridors — extra random connections based on BranchingFactor ──
-        int extraCount = (int)(rooms.Count * profile.CorridorStyle.BranchingFactor);
+        int extraCount = (int) (rooms.Count * profile.CorridorStyle.BranchingFactor);
         for (int i = 0; i < extraCount; i++)
         {
             int idxA = rng.Next(rooms.Count);
@@ -1085,11 +1527,11 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
             var (ax2, ay2) = rooms[idxA].Center;
             var (bx2, by2) = rooms[idxB].Center;
-            CarveLCorridor(cellMap, ax2, ay2, bx2, by2, rng, W, H);
+            CarveLCorridor(cellMap, ax2, ay2, bx2, by2, rng, W, H, RollCorridorWidth(rng));
         }
 
         // ── Pass C: Loop corridors — probabilistic extra links between room pairs ────
-        int loopCap   = rooms.Count;
+        int loopCap = rooms.Count;
         int loopCount = 0;
         for (int i = 0; i < rooms.Count && loopCount < loopCap; i++)
         {
@@ -1100,39 +1542,40 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
                 var (lx1, ly1) = rooms[i].Center;
                 var (lx2, ly2) = rooms[j].Center;
-                CarveLCorridor(cellMap, lx1, ly1, lx2, ly2, rng, W, H);
+                CarveLCorridor(cellMap, lx1, ly1, lx2, ly2, rng, W, H, RollCorridorWidth(rng));
                 loopCount++;
             }
         }
     }
 
     private static void CarveLCorridor(CellType[,] cellMap, int ax, int ay, int bx, int by,
-                                        Random rng, int W, int H)
+                                        Random rng, int W, int H, int width = 2, bool? horizontalFirst = null)
     {
-        if (rng.Next(2) == 0) { CarveHLine(cellMap, ax, bx, ay, W, H); CarveVLine(cellMap, bx, ay, by, W, H); }
-        else                  { CarveVLine(cellMap, ax, ay, by, W, H); CarveHLine(cellMap, ax, bx, by, W, H); }
+        var carveHorizontalFirst = horizontalFirst ?? rng.Next(2) == 0;
+        if (carveHorizontalFirst) { CarveHLine(cellMap, ax, bx, ay, W, H, width); CarveVLine(cellMap, bx, ay, by, W, H, width); }
+        else { CarveVLine(cellMap, ax, ay, by, W, H, width); CarveHLine(cellMap, ax, bx, by, W, H, width); }
     }
 
-    private static void CarveHLine(CellType[,] cellMap, int x0, int x1, int y, int W, int H)
+    private static int RollCorridorWidth(Random random) => random.Next(1, 4);
+
+    private static void CarveHLine(CellType[,] cellMap, int x0, int x1, int y, int W, int H, int width)
     {
         int minX = Math.Min(x0, x1);
         int maxX = Math.Max(x0, x1);
+        int offsetStart = -(width - 1) / 2;
         for (int x = minX; x <= maxX; x++)
-        {
-            TrySetCorridor(cellMap, x, y,     W, H);
-            TrySetCorridor(cellMap, x, y + 1, W, H); // 2-tile wide
-        }
+            for (int offset = 0; offset < width; offset++)
+                TrySetCorridor(cellMap, x, y + offsetStart + offset, W, H);
     }
 
-    private static void CarveVLine(CellType[,] cellMap, int x, int y0, int y1, int W, int H)
+    private static void CarveVLine(CellType[,] cellMap, int x, int y0, int y1, int W, int H, int width)
     {
         int minY = Math.Min(y0, y1);
         int maxY = Math.Max(y0, y1);
+        int offsetStart = -(width - 1) / 2;
         for (int y = minY; y <= maxY; y++)
-        {
-            TrySetCorridor(cellMap, x,     y, W, H);
-            TrySetCorridor(cellMap, x + 1, y, W, H); // 2-tile wide
-        }
+            for (int offset = 0; offset < width; offset++)
+                TrySetCorridor(cellMap, x + offsetStart + offset, y, W, H);
     }
 
     private static void TrySetCorridor(CellType[,] cellMap, int x, int y, int W, int H)
@@ -1143,32 +1586,33 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     }
 
     // =========================================================================
-    // Phase B5 — Doorway Marking
+    // Doorway marking
     // =========================================================================
 
     /// <summary>
     /// Returns the set of corridor cells that sit directly on the room/corridor boundary.
-    /// These cells receive door entities instead of wall entities in Phase E.
+    /// These cells receive door entities instead of wall entities.
     /// With 2-tile corridors this naturally creates double doors at each entry.
     /// </summary>
     // #Misfits Fix - Cluster adjacent doorway candidates, keep max 2 per cluster
     // to prevent long walls of doors (7+ N14DoorBunker in a row)
-    private static HashSet<(int, int)> MarkDoorways(CellType[,] cellMap, int W, int H)
+    private static HashSet<(int, int)> MarkDoorways(CellType[,] cellMap, List<RoomDef> rooms, int W, int H)
     {
         // Step 1: Find all corridor cells adjacent to a room/hub
         var candidates = new HashSet<(int, int)>();
         for (int x = 0; x < W; x++)
-        for (int y = 0; y < H; y++)
-        {
-            if (cellMap[x, y] != CellType.Corridor)
-                continue;
-
-            if (IsRoomAt(cellMap, x + 1, y, W, H) || IsRoomAt(cellMap, x - 1, y, W, H) ||
-                IsRoomAt(cellMap, x, y + 1, W, H) || IsRoomAt(cellMap, x, y - 1, W, H))
+            for (int y = 0; y < H; y++)
             {
-                candidates.Add((x, y));
+                if (cellMap[x, y] != CellType.Corridor)
+                    continue;
+
+                if ((IsRoomAt(cellMap, x + 1, y, W, H) || IsRoomAt(cellMap, x - 1, y, W, H) ||
+                     IsRoomAt(cellMap, x, y + 1, W, H) || IsRoomAt(cellMap, x, y - 1, W, H)) &&
+                    !IsThreeWideCorridorThreshold(cellMap, x, y, W, H))
+                {
+                    candidates.Add((x, y));
+                }
             }
-        }
 
         // Step 2: Flood-fill cluster adjacent candidates
         var visited = new HashSet<(int, int)>();
@@ -1222,6 +1666,21 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             }
         }
 
+        // A large room may have several graph connections, but it must not turn
+        // its whole perimeter into entrances. Keep its two closest thresholds.
+        foreach (var room in rooms)
+        {
+            var roomDoors = doorways
+                .Where(p => p.Item1 >= room.X - 1 && p.Item1 <= room.X + room.W &&
+                            p.Item2 >= room.Y - 1 && p.Item2 <= room.Y + room.H)
+                .OrderBy(p => (p.Item1 - room.Center.cx) * (p.Item1 - room.Center.cx) +
+                              (p.Item2 - room.Center.cy) * (p.Item2 - room.Center.cy))
+                .ToList();
+
+            foreach (var extra in roomDoors.Skip(2))
+                doorways.Remove(extra);
+        }
+
         return doorways;
     }
 
@@ -1231,8 +1690,59 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         return cellMap[x, y] is CellType.Room or CellType.FactionHub;
     }
 
+    /// <summary>
+    /// A three-tile-wide link is an intentionally open entrance, not three
+    /// adjacent single doors. At a room threshold the corridor width runs
+    /// perpendicular to the room-facing direction, so count that cross-section
+    /// and suppress all door candidates once it reaches three cells.
+    /// </summary>
+    private static bool IsThreeWideCorridorThreshold(CellType[,] cellMap, int x, int y, int W, int H)
+    {
+        // The additional "away" check distinguishes a broad entrance from a
+        // one-tile corridor that happens to run alongside a room wall.
+        if (IsRoomAt(cellMap, x + 1, y, W, H) &&
+            CountContiguousThresholdCells(cellMap, x, y, 0, 1, 1, 0, -1, 0, W, H) >= 3)
+            return true;
+        if (IsRoomAt(cellMap, x - 1, y, W, H) &&
+            CountContiguousThresholdCells(cellMap, x, y, 0, 1, -1, 0, 1, 0, W, H) >= 3)
+            return true;
+        if (IsRoomAt(cellMap, x, y + 1, W, H) &&
+            CountContiguousThresholdCells(cellMap, x, y, 1, 0, 0, 1, 0, -1, W, H) >= 3)
+            return true;
+        return IsRoomAt(cellMap, x, y - 1, W, H) &&
+               CountContiguousThresholdCells(cellMap, x, y, 1, 0, 0, -1, 0, 1, W, H) >= 3;
+    }
+
+    private static int CountContiguousThresholdCells(
+        CellType[,] cellMap, int x, int y,
+        int crossX, int crossY, int roomX, int roomY, int awayX, int awayY,
+        int W, int H)
+    {
+        bool IsThresholdCell(int checkX, int checkY) =>
+            InBounds(checkX, checkY, W, H) &&
+            cellMap[checkX, checkY] == CellType.Corridor &&
+            IsRoomAt(cellMap, checkX + roomX, checkY + roomY, W, H) &&
+            InBounds(checkX + awayX, checkY + awayY, W, H) &&
+            cellMap[checkX + awayX, checkY + awayY] == CellType.Corridor;
+
+        var count = IsThresholdCell(x, y) ? 1 : 0;
+        for (var sign = -1; sign <= 1; sign += 2)
+        {
+            for (var distance = 1; ; distance++)
+            {
+                var checkX = x + crossX * distance * sign;
+                var checkY = y + crossY * distance * sign;
+                if (!IsThresholdCell(checkX, checkY))
+                    break;
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     // =========================================================================
-    // Phase B6 — System 5: Door Validation
+    // Door validation
     // =========================================================================
 
     // #Misfits Add - System 5: validates doorway cells against structural constraints
@@ -1312,10 +1822,141 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     }
 
     // =========================================================================
-    // Phase C — Sewer Water Channels
+    // Structural generation validation
     // =========================================================================
 
-    // #Misfits Change - 3-wide sewer channels: catwalk | water | catwalk (was 2-wide double water)
+    /// <summary>
+    /// Validates the generated data model before tile and entity work begins.
+    /// This deliberately operates only on CellType[,] and room metadata so a
+    /// failed layout can be reproduced from its seed without querying entities.
+    /// </summary>
+    private void ValidateGeneratedLayout(
+        CellType[,] cellMap,
+        List<RoomDef> rooms,
+        HashSet<(int, int)> doorways,
+        ThemeProfile profile,
+        UndergroundGenParams p,
+        ExpeditionGenerationPlan plan,
+        IReadOnlyDictionary<string, RoomDef> roomsById,
+        int W,
+        int H)
+    {
+        var hubs = rooms.Where(r => r.RoomType == RoomType.FactionHub).ToList();
+        var walkable = new HashSet<(int x, int y)>();
+        var queue = new Queue<(int x, int y)>();
+
+        roomsById.TryGetValue(plan.EntryRoomId, out var startRoom);
+        if (startRoom != null)
+        {
+            var start = startRoom.Center;
+            if (IsTraversableAt(cellMap, start.cx, start.cy, W, H))
+            {
+                queue.Enqueue(start);
+                walkable.Add(start);
+            }
+        }
+
+        while (queue.Count > 0)
+        {
+            var (x, y) = queue.Dequeue();
+            TryReach(cellMap, x + 1, y, W, H, walkable, queue);
+            TryReach(cellMap, x - 1, y, W, H, walkable, queue);
+            TryReach(cellMap, x, y + 1, W, H, walkable, queue);
+            TryReach(cellMap, x, y - 1, W, H, walkable, queue);
+        }
+
+        var missingRequiredRooms = new List<string>();
+        foreach (var planned in plan.Rooms.Where(room => room.Required))
+        {
+            if (!roomsById.ContainsKey(planned.Id))
+                missingRequiredRooms.Add(planned.Id);
+        }
+
+        var unreachableRooms = new List<RoomType>();
+        foreach (var room in rooms)
+        {
+            var center = room.Center;
+            if (!walkable.Contains(center))
+                unreachableRooms.Add(room.RoomType);
+        }
+
+        int roomCells = 0;
+        int hubCells = 0;
+        int corridorCells = 0;
+        int platformCells = 0;
+        int waterCells = 0;
+        for (int x = 0; x < W; x++)
+            for (int y = 0; y < H; y++)
+            {
+                switch (cellMap[x, y])
+                {
+                    case CellType.Room:
+                        roomCells++;
+                        break;
+                    case CellType.FactionHub:
+                        hubCells++;
+                        break;
+                    case CellType.Corridor:
+                        corridorCells++;
+                        break;
+                    case CellType.Platform:
+                        platformCells++;
+                        break;
+                    case CellType.WaterChannel:
+                        waterCells++;
+                        break;
+                }
+            }
+
+        var roomCounts = rooms
+            .GroupBy(r => r.RoomType)
+            .OrderBy(g => g.Key.ToString())
+            .Select(g => $"{g.Key}={g.Count()}");
+
+        Log.Info($"[N14 ProcGen] theme={p.Theme} seed={p.Seed} size={W}x{H} " +
+                 $"rooms={rooms.Count} hubs={hubs.Count} doorways={doorways.Count} walkable={walkable.Count} " +
+                 $"roomCells={roomCells} hubCells={hubCells} corridorCells={corridorCells} " +
+                 $"platformCells={platformCells} waterCells={waterCells} " +
+                 $"types=[{string.Join(", ", roomCounts)}]");
+
+        if (startRoom == null)
+        {
+            Log.Warning($"[N14 ProcGen] seed={p.Seed} has no planned entry room.");
+        }
+
+        if (missingRequiredRooms.Count > 0)
+        {
+            Log.Warning($"[N14 ProcGen] theme={p.Theme} seed={p.Seed} missing mandatory rooms: " +
+                        string.Join(", ", missingRequiredRooms));
+        }
+
+        if (unreachableRooms.Count > 0)
+        {
+            Log.Warning($"[N14 ProcGen] theme={p.Theme} seed={p.Seed} unreachable room centers: " +
+                        string.Join(", ", unreachableRooms));
+        }
+    }
+
+    private static void TryReach(
+        CellType[,] cellMap,
+        int x,
+        int y,
+        int W,
+        int H,
+        HashSet<(int x, int y)> reached,
+        Queue<(int x, int y)> queue)
+    {
+        if (!IsTraversableAt(cellMap, x, y, W, H) || !reached.Add((x, y)))
+            return;
+
+        queue.Enqueue((x, y));
+    }
+
+    // =========================================================================
+    // Sewer water channels
+    // =========================================================================
+
+    // Sewer channels are one tile wide; room exits stay compatible with one-tile doors.
     // #Misfits Fix - Added forceCarve/overrideChance: non-Sewer maps now get sparse probabilistic channels
     private static void CarveSewerWaterChannels(CellType[,] cellMap, Random rng, int W, int H,
                                                  bool forceCarve, float overrideChance)
@@ -1331,35 +1972,29 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
             if (horizontal)
             {
-                // 3-wide horizontal: (x, y)=Platform | (x, y+1)=WaterChannel | (x, y+2)=Platform
-                int y      = rng.Next(H / 4, H * 3 / 4 - 2);  // ensure y+2 stays in bounds
+                int y = rng.Next(H / 4, H * 3 / 4);
                 int xStart = rng.Next(2, W / 4);
-                int xEnd   = rng.Next(W * 3 / 4, W - 2);
+                int xEnd = rng.Next(W * 3 / 4, W - 2);
                 for (int x = xStart; x <= xEnd; x++)
                 {
-                    if (InBounds(x, y,     W, H) && cellMap[x, y]     == CellType.Empty) cellMap[x, y]     = CellType.Platform;
-                    if (InBounds(x, y + 1, W, H) && cellMap[x, y + 1] == CellType.Empty) cellMap[x, y + 1] = CellType.WaterChannel;
-                    if (InBounds(x, y + 2, W, H) && cellMap[x, y + 2] == CellType.Empty) cellMap[x, y + 2] = CellType.Platform;
+                    if (InBounds(x, y, W, H) && cellMap[x, y] == CellType.Empty) cellMap[x, y] = CellType.WaterChannel;
                 }
             }
             else
             {
-                // 3-wide vertical: (x, y)=Platform | (x+1, y)=WaterChannel | (x+2, y)=Platform
-                int x      = rng.Next(W / 4, W * 3 / 4 - 2);  // ensure x+2 stays in bounds
+                int x = rng.Next(W / 4, W * 3 / 4);
                 int yStart = rng.Next(2, H / 4);
-                int yEnd   = rng.Next(H * 3 / 4, H - 2);
+                int yEnd = rng.Next(H * 3 / 4, H - 2);
                 for (int y = yStart; y <= yEnd; y++)
                 {
-                    if (InBounds(x,     y, W, H) && cellMap[x,     y] == CellType.Empty) cellMap[x,     y] = CellType.Platform;
-                    if (InBounds(x + 1, y, W, H) && cellMap[x + 1, y] == CellType.Empty) cellMap[x + 1, y] = CellType.WaterChannel;
-                    if (InBounds(x + 2, y, W, H) && cellMap[x + 2, y] == CellType.Empty) cellMap[x + 2, y] = CellType.Platform;
+                    if (InBounds(x, y, W, H) && cellMap[x, y] == CellType.Empty) cellMap[x, y] = CellType.WaterChannel;
                 }
             }
         }
     }
 
     // =========================================================================
-    // Phase D — Tile Painting
+    // Tile painting
     // =========================================================================
 
     // #Misfits Change - PaintTiles driven by ThemeProfile.TilePalette + WFC room tile map + env state rubble
@@ -1371,23 +2006,23 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         var palette = profile.TilePalette;
 
         for (int x = 0; x < W; x++)
-        for (int y = 0; y < H; y++)
-        {
-            string tileId = cellMap[x, y] switch
+            for (int y = 0; y < H; y++)
             {
-                CellType.Corridor     => palette.CorridorFloorTiles[rng.Next(palette.CorridorFloorTiles.Length)],
-                // #Misfits Change - WFC map lookup with rubble override, fallback to random palette
-                CellType.Room         => roomTileMap != null && roomTileMap.TryGetValue((x, y), out var t)
-                                         ? ApplyRubbleOverride(t, envMods, rng)
-                                         : palette.RoomFloorTiles[rng.Next(palette.RoomFloorTiles.Length)],
-                CellType.FactionHub   => palette.HubFloorTiles[rng.Next(palette.HubFloorTiles.Length)],
-                CellType.WaterChannel => TileWaterDeep,
-                CellType.Platform     => TileGrate,
-                _                     => palette.BackgroundTile,
-            };
+                string tileId = cellMap[x, y] switch
+                {
+                    CellType.Corridor => palette.CorridorFloorTiles[rng.Next(palette.CorridorFloorTiles.Length)],
+                    // #Misfits Change - WFC map lookup with rubble override, fallback to random palette
+                    CellType.Room => roomTileMap != null && roomTileMap.TryGetValue((x, y), out var t)
+                                             ? ApplyRubbleOverride(t, envMods, rng)
+                                             : palette.RoomFloorTiles[rng.Next(palette.RoomFloorTiles.Length)],
+                    CellType.FactionHub => palette.HubFloorTiles[rng.Next(palette.HubFloorTiles.Length)],
+                    CellType.WaterChannel => TileWaterDeep,
+                    CellType.Platform => TileGrate,
+                    _ => palette.BackgroundTile,
+                };
 
-            SetTile(gridUid, grid, x, y, tileId);
-        }
+                SetTile(gridUid, grid, x, y, tileId);
+            }
     }
 
     /// <summary>
@@ -1433,34 +2068,34 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             string edge = tiles[rng.Next(tiles.Length)];
 
             for (int rx = room.X; rx < room.X + room.W; rx++)
-            for (int ry = room.Y; ry < room.Y + room.H; ry++)
-            {
-                // Check if this cell is on the room's inner perimeter (1 tile inset from walls)
-                bool isInnerPerimeter = (rx == room.X + 1 || rx == room.X + room.W - 2 ||
-                                         ry == room.Y + 1 || ry == room.Y + room.H - 2);
-
-                // Check if adjacent to a corridor cell (doorway proximity)
-                bool nearDoorway = false;
-                for (int dx = -1; dx <= 1 && !nearDoorway; dx++)
-                for (int dy = -1; dy <= 1 && !nearDoorway; dy++)
+                for (int ry = room.Y; ry < room.Y + room.H; ry++)
                 {
-                    if (dx == 0 && dy == 0) continue;
-                    int nx = rx + dx, ny = ry + dy;
-                    if (nx >= 0 && nx < W && ny >= 0 && ny < H && cellMap[nx, ny] == CellType.Corridor)
-                        nearDoorway = true;
+                    // Check if this cell is on the room's inner perimeter (1 tile inset from walls)
+                    bool isInnerPerimeter = (rx == room.X + 1 || rx == room.X + room.W - 2 ||
+                                             ry == room.Y + 1 || ry == room.Y + room.H - 2);
+
+                    // Check if adjacent to a corridor cell (doorway proximity)
+                    bool nearDoorway = false;
+                    for (int dx = -1; dx <= 1 && !nearDoorway; dx++)
+                        for (int dy = -1; dy <= 1 && !nearDoorway; dy++)
+                        {
+                            if (dx == 0 && dy == 0) continue;
+                            int nx = rx + dx, ny = ry + dy;
+                            if (nx >= 0 && nx < W && ny >= 0 && ny < H && cellMap[nx, ny] == CellType.Corridor)
+                                nearDoorway = true;
+                        }
+
+                    // Assign tile based on position context
+                    string assigned;
+                    if (nearDoorway)
+                        assigned = rng.NextDouble() < 0.6 ? edge : primary;
+                    else if (isInnerPerimeter)
+                        assigned = rng.NextDouble() < 0.8 ? edge : primary;
+                    else
+                        assigned = rng.NextDouble() < 0.7 ? primary : accent;
+
+                    map[(rx, ry)] = assigned;
                 }
-
-                // Assign tile based on position context
-                string assigned;
-                if (nearDoorway)
-                    assigned = rng.NextDouble() < 0.6 ? edge : primary;
-                else if (isInnerPerimeter)
-                    assigned = rng.NextDouble() < 0.8 ? edge : primary;
-                else
-                    assigned = rng.NextDouble() < 0.7 ? primary : accent;
-
-                map[(rx, ry)] = assigned;
-            }
         }
 
         // ── Smoothing pass: remove isolated accent tiles ─────────────────────
@@ -1508,58 +2143,61 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     */
 
     // =========================================================================
-    // Phase E — Entity Spawning
+    // Entity spawning
     // =========================================================================
 
     // #Misfits Change - SpawnEntities now driven by ThemeProfile + EnvironmentalStateModifiers
     private void SpawnEntities(
         CellType[,] cellMap, List<RoomDef> rooms, HashSet<(int, int)> doorways,
         EntityUid gridUid, MapGridComponent grid,
-        ThemeProfile profile, EnvironmentalStateModifiers envMods, int difficultyTier, Random rng, int W, int H)
+        ThemeProfile profile, EnvironmentalStateModifiers envMods, int difficultyTier, int partySize, Random rng, int W, int H,
+        RoomDef objectiveRoom,
+        ExpeditionGenerationPlan plan,
+        IReadOnlyDictionary<string, RoomDef> roomsById)
     {
         var palette = profile.TilePalette;
-        var theme   = profile.Theme;
+        var theme = profile.Theme;
 
         // ── 1. Wall and water pass ─────────────────────────────────────────────
         for (int x = 0; x < W; x++)
-        for (int y = 0; y < H; y++)
-        {
-            var cell = cellMap[x, y];
-
-            if (cell == CellType.Platform)
+            for (int y = 0; y < H; y++)
             {
-                // #Misfits Add - Catwalk entity on grate tiles beside sewer water channels
-                SpawnAt("Catwalk", gridUid, grid, x, y);
-                continue;
-            }
+                var cell = cellMap[x, y];
 
-            if (cell == CellType.WaterChannel)
-            {
-                SpawnAt(WaterSewerEntity, gridUid, grid, x, y);
-                continue;
-            }
+                if (cell == CellType.Platform)
+                {
+                    // #Misfits Add - Catwalk entity on grate tiles beside sewer water channels
+                    SpawnAt("Catwalk", gridUid, grid, x, y);
+                    continue;
+                }
 
-            if (cell != CellType.Empty)
-                continue;
+                if (cell == CellType.WaterChannel)
+                {
+                    SpawnAt(WaterSewerEntity, gridUid, grid, x, y);
+                    continue;
+                }
 
-            // #Misfits Change - Wall selection now from profile TilePalette
-            bool adjRoom = IsAdjacentToTraversable(cellMap, x, y, W, H);
-            string wallProto;
-            if (adjRoom)
-            {
-                bool adjHub = (InBounds(x + 1, y, W, H) && cellMap[x + 1, y] == CellType.FactionHub)
-                           || (InBounds(x - 1, y, W, H) && cellMap[x - 1, y] == CellType.FactionHub)
-                           || (InBounds(x, y + 1, W, H) && cellMap[x, y + 1] == CellType.FactionHub)
-                           || (InBounds(x, y - 1, W, H) && cellMap[x, y - 1] == CellType.FactionHub);
-                wallProto = adjHub ? palette.HubWallEntity : palette.RoomWallEntity;
-            }
-            else
-            {
-                wallProto = WallRockFill;
-            }
+                if (cell != CellType.Empty)
+                    continue;
 
-            SpawnAt(wallProto, gridUid, grid, x, y);
-        }
+                // #Misfits Change - Wall selection now from profile TilePalette
+                bool adjRoom = IsAdjacentToTraversable(cellMap, x, y, W, H);
+                string wallProto;
+                if (adjRoom)
+                {
+                    bool adjHub = (InBounds(x + 1, y, W, H) && cellMap[x + 1, y] == CellType.FactionHub)
+                               || (InBounds(x - 1, y, W, H) && cellMap[x - 1, y] == CellType.FactionHub)
+                               || (InBounds(x, y + 1, W, H) && cellMap[x, y + 1] == CellType.FactionHub)
+                               || (InBounds(x, y - 1, W, H) && cellMap[x, y - 1] == CellType.FactionHub);
+                    wallProto = adjHub ? palette.HubWallEntity : palette.RoomWallEntity;
+                }
+                else
+                {
+                    wallProto = WallRockFill;
+                }
+
+                SpawnAt(wallProto, gridUid, grid, x, y);
+            }
 
         // ── 2. Door pass: threshold cells between corridor and room ────────────
         foreach (var (dx, dy) in doorways)
@@ -1586,11 +2224,32 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         var lightCfg = profile.LightConfig;
 
         // #Misfits Add - Track light floor cells and reactor center for LV wire routing (Vault only)
-        var lightFloorPositions  = new List<(int x, int y)>();
+        var lightFloorPositions = new List<(int x, int y)>();
         (int x, int y)? reactorCenter = null;
 
         // #Misfits Add - Pre-compute hub list for depth factor calculations
         var hubs = rooms.Where(r => r.RoomType == RoomType.FactionHub).ToList();
+        var planRoomsById = plan.Rooms.ToDictionary(room => room.Id);
+        var plannedByRealizedRoom = roomsById.ToDictionary(pair => pair.Value, pair => planRoomsById[pair.Key]);
+        var mobTheme = SelectExpeditionMobTheme(profile, rng);
+        var population = new ExpeditionPopulationState(mobTheme, partySize);
+        var finalGuardianPrototype = SelectFinalGuardianPrototype(mobTheme.Family, partySize, rng);
+        var optionalGuardianLimit = GetOptionalGuardianLimit(partySize);
+        var optionalGuardiansSpawned = 0;
+
+        // Reserve the final guardian before ambient population rolls. This keeps
+        // family caps truthful while guaranteeing that normal spawns cannot use
+        // the last Deathclaw, Behemoth, or Maypole slot first.
+        if (!population.CanReserve(finalGuardianPrototype))
+        {
+            Log.Error($"[N14 ProcGen] Final guardian '{finalGuardianPrototype}' exceeds the '{mobTheme.Name}' population cap.");
+            return;
+        }
+        population.Reserve(finalGuardianPrototype);
+
+        Log.Info($"[N14 ProcGen] enemy-theme='{mobTheme.Name}', faction='{mobTheme.Faction}', " +
+                 $"hodgepodge={mobTheme.IsHodgepodge}, party={partySize}, " +
+                 $"caps=deathclaw:{population.DeathclawLimit}/behemoth:{population.BehemothLimit}/maypole:{population.MaypoleLimit}");
 
         foreach (var room in rooms)
         {
@@ -1599,22 +2258,48 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
 
             // #Misfits Add - Compute depth factor once per room for density/spawn scaling
             float depthFactor = GetDepthFactor(room, hubs, W, H);
+            (int x, int y)? reservedTile = ReferenceEquals(room, objectiveRoom) ? room.Center : null;
+            plannedByRealizedRoom.TryGetValue(room, out var plannedRoom);
             // #Misfits Change - pass cellMap/W/H for System 4 placement rules
-            DressRoom(room, gridUid, grid, profile, envMods, rng, cellMap, W, H, depthFactor);
-            SpawnRoomMobs(room, gridUid, grid, profile, envMods, difficultyTier, rng, depthFactor);
+            DressRoom(room, gridUid, grid, profile, envMods, rng, cellMap, W, H, depthFactor, reservedTile,
+                plannedRoom?.SecurityLevel ?? 0, plannedRoom?.IsObjective ?? false, difficultyTier);
+            SpawnRoomMobs(room, gridUid, grid, mobTheme, population, envMods, difficultyTier, partySize, rng,
+                depthFactor, reservedTile);
+
+            // Deep rooms retain a small chance to become optional guardian
+            // encounters. They are capped per launch roster and never occupy
+            // the objective or safe faction hubs, so they add pressure without
+            // replacing the planned finale.
+            if (!ReferenceEquals(room, objectiveRoom) && optionalGuardiansSpawned < optionalGuardianLimit &&
+                TrySpawnOptionalGuardian(room, gridUid, grid, mobTheme, population, partySize, rng, depthFactor))
+                optionalGuardiansSpawned++;
+
+            // Exploration rooms may get ambient weapon-table markers. The
+            // objective's meaningful reward now belongs to its final guardian.
+            var weaponLootCount = !ReferenceEquals(room, objectiveRoom)
+                ? GetExplorationWeaponLootCount(room, difficultyTier, partySize, rng)
+                : 0;
+            for (var lootIndex = 0; lootIndex < weaponLootCount; lootIndex++)
+            {
+                var weaponX = room.X + 1 + rng.Next(Math.Max(1, room.W - 2));
+                var weaponY = room.Y + 1 + rng.Next(Math.Max(1, room.H - 2));
+                SpawnAt("M14WeaponLootSpawner", gridUid, grid, weaponX, weaponY);
+            }
 
             // Sub-pass: Lights (profile-driven count and style)
             int lightCount = profile.GetLightCount(room.RoomType);
             // #Misfits Add - Environmental light reduction: skip a fraction of lights in degraded environments
             if (envMods.LightReductionFraction > 0)
-                lightCount = Math.Max(1, (int)(lightCount * (1f - envMods.LightReductionFraction)));
+                lightCount = Math.Max(1, (int) (lightCount * (1f - envMods.LightReductionFraction)));
 
             int innerW = room.W - 2;
             int innerH = room.H - 2;
-            
+
             if (innerW > 0 && innerH > 0)
             {
                 var taken = new HashSet<(int, int)>();
+                if (reservedTile.HasValue)
+                    taken.Add(reservedTile.Value);
 
                 if (lightCfg.Style == LightStyle.GroundPost)
                 {
@@ -1637,17 +2322,17 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                     // Wall-mounted light: placed AT the wall cell facing inward
                     var wallCandidates = new List<(int wx, int wy, Direction facing, int fx, int fy)>();
                     for (int lx = room.X + 1; lx < room.X + room.W - 1; lx++)
-                    for (int ly = room.Y + 1; ly < room.Y + room.H - 1; ly++)
-                    {
-                        if (InBounds(lx, ly + 1, W, H) && cellMap[lx, ly + 1] == CellType.Empty)
-                            wallCandidates.Add((lx, ly + 1, Direction.South, lx, ly));
-                        else if (InBounds(lx, ly - 1, W, H) && cellMap[lx, ly - 1] == CellType.Empty)
-                            wallCandidates.Add((lx, ly - 1, Direction.North, lx, ly));
-                        else if (InBounds(lx + 1, ly, W, H) && cellMap[lx + 1, ly] == CellType.Empty)
-                            wallCandidates.Add((lx + 1, ly, Direction.West,  lx, ly));
-                        else if (InBounds(lx - 1, ly, W, H) && cellMap[lx - 1, ly] == CellType.Empty)
-                            wallCandidates.Add((lx - 1, ly, Direction.East,  lx, ly));
-                    }
+                        for (int ly = room.Y + 1; ly < room.Y + room.H - 1; ly++)
+                        {
+                            if (InBounds(lx, ly + 1, W, H) && cellMap[lx, ly + 1] == CellType.Empty)
+                                wallCandidates.Add((lx, ly + 1, Direction.South, lx, ly));
+                            else if (InBounds(lx, ly - 1, W, H) && cellMap[lx, ly - 1] == CellType.Empty)
+                                wallCandidates.Add((lx, ly - 1, Direction.North, lx, ly));
+                            else if (InBounds(lx + 1, ly, W, H) && cellMap[lx + 1, ly] == CellType.Empty)
+                                wallCandidates.Add((lx + 1, ly, Direction.West, lx, ly));
+                            else if (InBounds(lx - 1, ly, W, H) && cellMap[lx - 1, ly] == CellType.Empty)
+                                wallCandidates.Add((lx - 1, ly, Direction.East, lx, ly));
+                        }
 
                     for (int i = wallCandidates.Count - 1; i > 0; i--)
                     {
@@ -1678,7 +2363,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                 }
 
                 // Sub-pass: Decals via DecalSystem (profile-driven pool + env density multiplier)
-                int decalCount = (int)(rng.Next(2, 7) * envMods.DecalDensityMult);
+                int decalCount = (int) (rng.Next(2, 7) * envMods.DecalDensityMult);
                 var decalTaken = new HashSet<(int, int)>();
                 // #Misfits Add - Nature decals injected when Overgrown env state is active
                 var effectiveDecalPool = envMods.NatureDecals
@@ -1703,6 +2388,13 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                 }
             }
         }
+
+        // Every expedition receives one tracked final guardian in its planned
+        // objective room. Its reward is stored on the mob and does not exist
+        // until that boss is killed.
+        SpawnFinalGuardian(objectiveRoom, gridUid, grid, mobTheme, finalGuardianPrototype, partySize, rng);
+        Log.Info($"[N14 ProcGen] optional-guardians={optionalGuardiansSpawned}/{optionalGuardianLimit}, " +
+                 $"final-guardian='{finalGuardianPrototype}'");
 
         // #Misfits Removed - Exit points are now placed by N14ExpeditionSystem.SpawnExitPoints()
         // which correctly sets N14ExpeditionExitComponent.ExpeditionMap. The generator-spawned exits
@@ -1735,37 +2427,25 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             }
 
             for (int x = 0; x < W; x++)
-            for (int y = 0; y < H; y++)
-            {
-                if (cellMap[x, y] is not (CellType.Room or CellType.Corridor)) continue;
-                if (rng.Next(100) >= 8) continue;
-
-                bool nearHub = false;
-                foreach (var (hcx, hcy) in hubCenters)
+                for (int y = 0; y < H; y++)
                 {
-                    if (Math.Max(Math.Abs(x - hcx), Math.Abs(y - hcy)) <= 8) { nearHub = true; break; }
+                    if (cellMap[x, y] is not (CellType.Room or CellType.Corridor)) continue;
+                    if (rng.Next(100) >= 8) continue;
+
+                    bool nearHub = false;
+                    foreach (var (hcx, hcy) in hubCenters)
+                    {
+                        if (Math.Max(Math.Abs(x - hcx), Math.Abs(y - hcy)) <= 8) { nearHub = true; break; }
+                    }
+                    if (!nearHub) continue;
+
+                    string arrowDecal = rng.Next(2) == 0 ? "N14GraffitiArrowshelterleft" : "N14GraffitiArrowshelterright";
+                    var markerCoords = _mapSystem.GridTileToLocal(gridUid, grid, new Vector2i(x, y));
+                    _decalSystem.TryAddDecal(arrowDecal, markerCoords, out _);
                 }
-                if (!nearHub) continue;
-
-                string arrowDecal = rng.Next(2) == 0 ? "N14GraffitiArrowshelterleft" : "N14GraffitiArrowshelterright";
-                var markerCoords = _mapSystem.GridTileToLocal(gridUid, grid, new Vector2i(x, y));
-                _decalSystem.TryAddDecal(arrowDecal, markerCoords, out _);
-            }
         }
 
-        // ── 6. Large-room sentry guardian pass ──────────────────────────────────
-        foreach (var room in rooms)
-        {
-            if (room.W * room.H <= 100) continue;
-            if (rng.Next(100) >= 15) continue;
-            var (scx, scy) = room.Center;
-            string sentryProto = rng.Next(2) == 0 ? "N14MobRobotSentryBot" : "N14MobRobotSentryBotBallistic";
-            SpawnAt(sentryProto, gridUid, grid, scx, scy);
-            if (InBounds(scx + 1, scy, W, H))
-                SpawnAt("N14LootCrateVaultBigRusted", gridUid, grid, scx + 1, scy);
-        }
-
-        // ── 7. LV wire routing: Vault only ─────────────────────────────────────
+        // ── 6. LV wire routing: Vault only ─────────────────────────────────────
         if (theme == UndergroundTheme.Vault && reactorCenter.HasValue)
         {
             foreach (var floorPos in lightFloorPositions)
@@ -1795,7 +2475,11 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     private void DressRoom(RoomDef room, EntityUid gridUid, MapGridComponent grid,
                             ThemeProfile profile, EnvironmentalStateModifiers envMods, Random rng,
                             CellType[,] cellMap, int W, int H,
-                            float depthFactor = 0.5f)
+                            float depthFactor = 0.5f,
+                            (int x, int y)? reservedTile = null,
+                            int securityLevel = 0,
+                            bool isObjective = false,
+                            int difficultyTier = 0)
     {
         int innerW = room.W - 2;
         int innerH = room.H - 2;
@@ -1804,34 +2488,36 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         // #Misfits Change - Raised all item counts for "lived-in" room feel; new room types added
         int itemCount = room.RoomType switch
         {
-            RoomType.FactionHub       => rng.Next(12, 19),
-            RoomType.Central          => rng.Next(10, 17),
-            RoomType.VaultOverseer    => rng.Next(8, 15),
-            RoomType.VaultVault       => rng.Next(8, 15),
-            RoomType.VaultArmory      => rng.Next(8, 15),
-            RoomType.VaultBarracks    => rng.Next(6, 13),
-            RoomType.VaultLab         => rng.Next(6, 13),
-            RoomType.VaultKitchen     => rng.Next(6, 13),
+            RoomType.FactionHub => rng.Next(12, 19),
+            RoomType.Central => rng.Next(10, 17),
+            RoomType.VaultOverseer => rng.Next(8, 15),
+            RoomType.VaultVault => rng.Next(8, 15),
+            RoomType.VaultArmory => rng.Next(8, 15),
+            RoomType.VaultSecurity => rng.Next(5, 10),
+            RoomType.VaultMaintenance => rng.Next(5, 10),
+            RoomType.VaultBarracks => rng.Next(6, 13),
+            RoomType.VaultLab => rng.Next(6, 13),
+            RoomType.VaultKitchen => rng.Next(6, 13),
             RoomType.VaultHydroponics => rng.Next(6, 12),
-            RoomType.VaultRecreation  => rng.Next(8, 14),
-            RoomType.VaultReactor     => rng.Next(4, 9),
-            RoomType.SewerGrotto      => rng.Next(4, 9),
-            RoomType.SewerPump        => rng.Next(4, 9),
-            RoomType.SewerNest        => rng.Next(4, 9),
-            RoomType.SewerCamp        => rng.Next(5, 10),
-            RoomType.SewerJunction    => rng.Next(2, 6),
-            RoomType.SewerTunnel      => rng.Next(1, 3),
-            RoomType.MetroPlatform    => rng.Next(6, 12),
+            RoomType.VaultRecreation => rng.Next(8, 14),
+            RoomType.VaultReactor => rng.Next(4, 9),
+            RoomType.SewerGrotto => rng.Next(4, 9),
+            RoomType.SewerPump => rng.Next(4, 9),
+            RoomType.SewerNest => rng.Next(4, 9),
+            RoomType.SewerCamp => rng.Next(5, 10),
+            RoomType.SewerJunction => rng.Next(2, 6),
+            RoomType.SewerTunnel => rng.Next(1, 3),
+            RoomType.MetroPlatform => rng.Next(6, 12),
             RoomType.MetroMaintenance => rng.Next(4, 9),
-            RoomType.MetroDepot       => rng.Next(4, 9),
-            RoomType.MetroCommand     => rng.Next(6, 12),
-            RoomType.MetroTunnel      => rng.Next(1, 3),
-            _                         => rng.Next(2, 6),
+            RoomType.MetroDepot => rng.Next(4, 9),
+            RoomType.MetroCommand => rng.Next(6, 12),
+            RoomType.MetroTunnel => rng.Next(1, 3),
+            _ => rng.Next(2, 6),
         };
 
         // #Misfits Add - Depth-scaled item count: 50% near hub → 130% at center
         float depthScalar = 0.5f + (1.3f - 0.5f) * depthFactor;
-        itemCount = Math.Max(1, (int)(itemCount * depthScalar));
+        itemCount = Math.Max(1, (int) (itemCount * depthScalar));
 
         // #Misfits Change - Furniture pool via profile lookup (RoomTypeDefinition.FurniturePoolKey)
         var def = profile.GetRoomDef(room.RoomType);
@@ -1841,14 +2527,23 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             pool = profile.GetFurniturePool("standard");
 
         // ── tracking sets ───────────────────────────────────────────────────────
-        var occupiedTiles  = new HashSet<(int, int)>();
+        var occupiedTiles = new HashSet<(int, int)>();
+        if (reservedTile.HasValue)
+            occupiedTiles.Add(reservedTile.Value);
         // Maps tile → proto name for OnSurface parent lookups
         var placedEntities = new Dictionary<(int, int), string>();
         string roomTypeName = room.RoomType.ToString();
 
         // ── precompute tile lists ───────────────────────────────────────────────
-        var wallTiles         = FindWallTilesInRoom(room, cellMap, W, H);
+        var wallTiles = FindWallTilesInRoom(room, cellMap, W, H);
         var wallAdjacentTiles = FindWallAdjacentFloorTiles(room, cellMap, W, H);
+
+        if (room.RoomType is not (RoomType.VaultKitchen or RoomType.VaultOverseer or RoomType.MetroCommand))
+        {
+            itemCount -= ComposeRoomIdentity(room, gridUid, grid, wallTiles, wallAdjacentTiles,
+                                             occupiedTiles, placedEntities, rng, cellMap, W, H);
+            itemCount = Math.Max(0, itemCount);
+        }
 
         // ══════════════════════════════════════════════════════════════════════
         // RULE E — Office composition: mandatory desk + chair + terminal
@@ -1939,7 +2634,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         {
             var wallRun = FindLongestWallRun(room, cellMap, W, H);
             int tablesToPlace = Math.Min(wallRun.Count, Math.Max(2, itemCount / 2));
-            string[] kitchenAppliances = { "N14CookingStove", "N14CookingGrille", "N14Microwave" };
+            string[] kitchenAppliances = { "N14CookingStove", "N14KitchenGrill", "KitchenMicrowave" };
             int applianceIdx = 0;
 
             for (int ti = 0; ti < tablesToPlace && ti < wallRun.Count; ti++)
@@ -2005,7 +2700,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             // OnSurface items need a parent — defer until after main pass
             if (rule == PlacementRule.OnSurface)
             {
-                if (TryPlaceOnSurface(proto, occupiedTiles, placedEntities, gridUid, grid))
+                if (TryPlaceOnSurface(proto, occupiedTiles, placedEntities, gridUid, grid, rng))
                     placed++;
                 continue;
             }
@@ -2017,7 +2712,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         }
 
         // ── Junk scatter: env-state-scaled junk piles ───────────────────────────
-        int junkCount = (int)(rng.Next(1, 4) * envMods.JunkDensityMult);
+        int junkCount = (int) (rng.Next(0, 2) * envMods.JunkDensityMult);
         for (int j = 0; j < junkCount; j++)
         {
             for (int attempt = 0; attempt < 6; attempt++)
@@ -2059,6 +2754,120 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                 break;
             }
         }
+
+        // Replace the former junk-pile carpet with useful, low-tier discovery
+        // caches.  Hubs remain staging areas; every interior room gets one or
+        // two guaranteed Tier 1/2 rolls in addition to role-specific loot.
+        if (room.RoomType != RoomType.FactionHub)
+        {
+            var cacheCount = rng.Next(1, 3);
+            for (var cache = 0; cache < cacheCount; cache++)
+            {
+                for (var attempt = 0; attempt < 8; attempt++)
+                {
+                    var cacheX = room.X + 1 + rng.Next(innerW);
+                    var cacheY = room.Y + 1 + rng.Next(innerH);
+                    if (occupiedTiles.Contains((cacheX, cacheY))) continue;
+                    var cacheSpawner = rng.Next(2) == 0
+                        ? "M14ExpeditionWeaponLootTier1Guaranteed"
+                        : "M14ExpeditionWeaponLootTier2Guaranteed";
+                    SpawnAt(cacheSpawner, gridUid, grid, cacheX, cacheY);
+                    occupiedTiles.Add((cacheX, cacheY));
+                    break;
+                }
+            }
+        }
+
+        // Hazards now consume the plan's security gradient and the environmental
+        // modifier. They share the dressing occupancy set, so traps do not land
+        // under furniture or on the objective reward socket.
+        if (room.RoomType != RoomType.FactionHub && profile.HazardPool.Length > 0)
+        {
+            var hazardChance = (int) ((5 + securityLevel * 12 + difficultyTier * 4 + (isObjective ? 15 : 0))
+                * envMods.HazardChanceMult);
+            if (rng.Next(100) < Math.Clamp(hazardChance, 0, 75))
+            {
+                var hazardCount = isObjective && difficultyTier >= 2 ? 2 : 1;
+                for (var i = 0; i < hazardCount; i++)
+                {
+                    var prototype = profile.HazardPool[rng.Next(profile.HazardPool.Length)];
+                    var rule = GetPlacementRule(prototype, roomTypeName);
+                    TryPlaceByRule(prototype, rule, room, gridUid, grid,
+                        wallTiles, wallAdjacentTiles, occupiedTiles, placedEntities, rng, cellMap, W, H);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Places a compact, deterministic identity group for room types that need
+    /// more than a generic furniture pool to read correctly. Each prototype is
+    /// passed through the same placement-rule dispatcher as normal dressing.
+    /// </summary>
+    private int ComposeRoomIdentity(
+        RoomDef room,
+        EntityUid gridUid,
+        MapGridComponent grid,
+        List<(int x, int y)> wallTiles,
+        List<(int x, int y)> wallAdjacentTiles,
+        HashSet<(int, int)> occupiedTiles,
+        Dictionary<(int, int), string> placedEntities,
+        Random rng,
+        CellType[,] cellMap,
+        int W,
+        int H)
+    {
+        string[] prototypes = room.RoomType switch
+        {
+            RoomType.VaultBarracks => new[]
+            {
+                "N14BedBunk", "N14BedBunk", "N14LootCrateFootlocker",
+                "N14ClosetGrey1", "N14TableDeskMetalSmall",
+            },
+            RoomType.VaultArmory => new[]
+            {
+                "N14WorkbenchWeaponbench", "N14AmmoBox10mm", "N14CrateArmy",
+                "N14ClosetGrey1", "N14ComputerTerminal",
+            },
+            RoomType.VaultSecurity => new[]
+            {
+                "N14ComputerTerminal", "N14BarricadeMetal", "N14ClosetGunCabinet",
+                "N14ChairMetalFolding",
+            },
+            RoomType.VaultMaintenance => new[]
+            {
+                "N14WorkbenchMetal", "N14GasPipeStraight", "N14Wrench",
+            },
+            RoomType.VaultReactor => new[]
+            {
+                "N14GasPipeStraight", "N14SignDanger",
+            },
+            RoomType.SewerNest => new[]
+            {
+                "N14Bedroll", "N14JunkPile9", "N14JunkPile10",
+                "N14DecorFloorSkeleton",
+            },
+            RoomType.MetroPlatform => new[]
+            {
+                "N14JunkBench", "N14MagazineRack", "N14VendingMachineNukaCola",
+                "N14Trashbin", "N14PosterAdvertNukaCola1",
+            },
+            _ => Array.Empty<string>(),
+        };
+
+        int placed = 0;
+        foreach (var proto in prototypes)
+        {
+            var rule = GetPlacementRule(proto, room.RoomType.ToString());
+            if (!TryPlaceByRule(proto, rule, room, gridUid, grid,
+                                wallTiles, wallAdjacentTiles, occupiedTiles, placedEntities, rng,
+                                cellMap, W, H))
+                continue;
+
+            placed++;
+        }
+
+        return placed;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -2083,46 +2892,46 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         switch (rule)
         {
             case PlacementRule.WallAttached:
-            {
-                // Spawn ON a wall cell (CellType.Empty adjacent to Room)
-                var candidates = wallTiles.Where(t => !occupiedTiles.Contains(t)).ToList();
-                if (candidates.Count == 0) return false;
-                var tile = candidates[rng.Next(candidates.Count)];
-                SpawnAt(proto, gridUid, grid, tile.x, tile.y);
-                occupiedTiles.Add(tile);
-                placedEntities[tile] = proto;
-                return true;
-            }
-
-            case PlacementRule.WallAdjacent:
-            {
-                // Spawn on floor tile adjacent to wall
-                var candidates = wallAdjacentTiles.Where(t => !occupiedTiles.Contains(t)).ToList();
-                if (candidates.Count == 0) return false;
-                var tile = candidates[rng.Next(candidates.Count)];
-                SpawnAt(proto, gridUid, grid, tile.x, tile.y);
-                occupiedTiles.Add(tile);
-                placedEntities[tile] = proto;
-
-                // Special: armory shelves get an immediate weapon spawn on same tile
-                if (proto.Contains("ShelfMetal", StringComparison.OrdinalIgnoreCase) &&
-                    room.RoomType is RoomType.VaultArmory)
                 {
-                    string[] weapons = { "N14WeaponPistol10mm", "N14WeaponRifleVarmint", "N14WeaponShotgunCaravan" };
-                    SpawnAt(weapons[rng.Next(weapons.Length)], gridUid, grid, tile.x, tile.y);
+                    // Spawn ON a wall cell (CellType.Empty adjacent to Room)
+                    var candidates = wallTiles.Where(t => !occupiedTiles.Contains(t)).ToList();
+                    if (candidates.Count == 0) return false;
+                    var tile = candidates[rng.Next(candidates.Count)];
+                    SpawnAt(proto, gridUid, grid, tile.x, tile.y);
+                    occupiedTiles.Add(tile);
+                    placedEntities[tile] = proto;
+                    return true;
                 }
 
-                return true;
-            }
+            case PlacementRule.WallAdjacent:
+                {
+                    // Spawn on floor tile adjacent to wall
+                    var candidates = wallAdjacentTiles.Where(t => !occupiedTiles.Contains(t)).ToList();
+                    if (candidates.Count == 0) return false;
+                    var tile = candidates[rng.Next(candidates.Count)];
+                    SpawnAt(proto, gridUid, grid, tile.x, tile.y);
+                    occupiedTiles.Add(tile);
+                    placedEntities[tile] = proto;
+
+                    // Special: armory shelves get an immediate weapon spawn on same tile
+                    if (proto.Contains("ShelfMetal", StringComparison.OrdinalIgnoreCase) &&
+                        room.RoomType is RoomType.VaultArmory)
+                    {
+                        string[] weapons = { "N14WeaponPistol10mm", "N14WeaponRifleVarmint", "N14WeaponShotgunCaravan" };
+                        SpawnAt(weapons[rng.Next(weapons.Length)], gridUid, grid, tile.x, tile.y);
+                    }
+
+                    return true;
+                }
 
             case PlacementRule.OnSurface:
-                return TryPlaceOnSurface(proto, occupiedTiles, placedEntities, gridUid, grid);
+                return TryPlaceOnSurface(proto, occupiedTiles, placedEntities, gridUid, grid, rng);
 
             case PlacementRule.WallRow:
-            {
-                // Handled by kitchen pre-pass; if we get here as standalone, fall through to FreeStanding
-                return TryPlaceFreeStanding(proto, room, gridUid, grid, occupiedTiles, placedEntities, rng);
-            }
+                {
+                    // Handled by kitchen pre-pass; if we get here as standalone, fall through to FreeStanding
+                    return TryPlaceFreeStanding(proto, room, gridUid, grid, occupiedTiles, placedEntities, rng);
+                }
 
             case PlacementRule.FreeStanding:
             default:
@@ -2151,10 +2960,10 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
                 int side = rng.Next(4);
                 switch (side)
                 {
-                    case 0: fx = room.X + 1;         fy = room.Y + 1 + rng.Next(innerH); break;
-                    case 1: fx = room.X + innerW;    fy = room.Y + 1 + rng.Next(innerH); break;
-                    case 2: fx = room.X + 1 + rng.Next(innerW); fy = room.Y + 1;         break;
-                    default:fx = room.X + 1 + rng.Next(innerW); fy = room.Y + innerH;    break;
+                    case 0: fx = room.X + 1; fy = room.Y + 1 + rng.Next(innerH); break;
+                    case 1: fx = room.X + innerW; fy = room.Y + 1 + rng.Next(innerH); break;
+                    case 2: fx = room.X + 1 + rng.Next(innerW); fy = room.Y + 1; break;
+                    default: fx = room.X + 1 + rng.Next(innerW); fy = room.Y + innerH; break;
                 }
             }
             else
@@ -2181,7 +2990,8 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         string proto,
         HashSet<(int, int)> occupiedTiles,
         Dictionary<(int, int), string> placedEntities,
-        EntityUid gridUid, MapGridComponent grid)
+        EntityUid gridUid, MapGridComponent grid,
+        Random random)
     {
         string parentKw = GetOnSurfaceParentKeyword(proto);
         if (string.IsNullOrEmpty(parentKw)) return false;
@@ -2197,7 +3007,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         if (parentTiles.Count == 0) return false;
 
         // Pick a random parent tile (allow stacking — OnSurface entities share the tile)
-        var target = parentTiles[new Random().Next(parentTiles.Count)];
+        var target = parentTiles[random.Next(parentTiles.Count)];
         SpawnAt(proto, gridUid, grid, target.x, target.y);
         return true;
     }
@@ -2213,76 +3023,319 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // #Misfits Change - Mob spawning now uses room-type-specific spawn counts
     // ─────────────────────────────────────────────────────────────────────────
 
-    // #Misfits Change - Mob spawning now uses profile MobGroups + env state MobCountMult
+    // #Misfits Change - Mob spawning uses one expedition-wide faction-safe theme.
     // #Misfits Add - depthFactor scales spawn chance: 40% near hub → 100% at center
     private void SpawnRoomMobs(RoomDef room, EntityUid gridUid, MapGridComponent grid,
-                                ThemeProfile profile, EnvironmentalStateModifiers envMods,
-                                int difficultyTier, Random rng, float depthFactor = 0.5f)
+                                MobThemeDefinition mobTheme, ExpeditionPopulationState population,
+                                EnvironmentalStateModifiers envMods, int difficultyTier, int partySize, Random rng,
+                                float depthFactor = 0.5f, (int x, int y)? reservedTile = null)
     {
         // #Misfits Fix - FactionHub rooms are player spawn points; never populate with hostile NPCs
         if (room.RoomType == RoomType.FactionHub) return;
 
         int spawnChance = room.RoomType switch
         {
-            RoomType.Central         => 100,
-            RoomType.VaultOverseer   => 80,
-            RoomType.VaultArmory     => 85,
-            RoomType.VaultVault      => 70,
-            RoomType.SewerNest       => 95,
-            RoomType.SewerPump       => 60,
-            RoomType.MetroCommand    => 80,
-            RoomType.MetroPlatform   => 70,
-            RoomType.MetroDepot      => 75,
-            _                        => 50,
+            RoomType.Central => 100,
+            RoomType.VaultOverseer => 80,
+            RoomType.VaultArmory => 85,
+            RoomType.VaultSecurity => 70,
+            RoomType.VaultMaintenance => 55,
+            RoomType.VaultVault => 70,
+            RoomType.SewerNest => 95,
+            RoomType.SewerPump => 80,
+            RoomType.SewerGrotto => 80,
+            RoomType.SewerJunction => 70,
+            RoomType.SewerTunnel => 65,
+            RoomType.SewerCamp => 65,
+            RoomType.MetroCommand => 80,
+            RoomType.MetroPlatform => 70,
+            RoomType.MetroDepot => 75,
+            _ => 60,
         };
 
         // #Misfits Add - Depth-scaled spawn chance: 40% of base near hub, full at center
         // #Misfits Fix - Inline lerp: MathF.Lerp not available pre-.NET 9
-        spawnChance = (int)(spawnChance * 0.4f + (spawnChance - spawnChance * 0.4f) * depthFactor);
+        spawnChance = (int) (spawnChance * 0.4f + (spawnChance - spawnChance * 0.4f) * depthFactor);
 
         if (rng.Next(100) >= spawnChance) return;
 
         int mobCount = GetMobSpawnCount(room.RoomType, difficultyTier);
         // #Misfits Add - Environmental mob count modifier (Overgrown = fewer mobs, etc.)
-        mobCount = Math.Max(1, (int)(mobCount * envMods.MobCountMult));
+        mobCount = Math.Max(1, (int) (mobCount * envMods.MobCountMult));
+        // Parties bring more firepower, so scale total encounters rather than
+        // changing the base difficulty tier or silently upgrading ordinary loot.
+        mobCount = Math.Max(1, (int) Math.Ceiling(mobCount * GetPartyMobMultiplier(partySize)));
 
-        // #Misfits Change - Mob groups from profile instead of static arrays
-        var groups = profile.MobGroups;
-        if (groups.Length == 0) return;
-        var pool   = groups[rng.Next(groups.Length)];
-        int total  = pool.Sum(m => m.Item2);
+        var pool = mobTheme.MobPool;
+        if (pool.Length == 0)
+            return;
 
         int innerW = room.W - 2;
         int innerH = room.H - 2;
         if (innerW < 1 || innerH < 1) return;
 
         var taken = new HashSet<(int, int)>();
+        if (reservedTile.HasValue)
+            taken.Add(reservedTile.Value);
+
+        var spawnedMobs = 0;
 
         for (int i = 0; i < mobCount; i++)
         {
-            int roll  = rng.Next(total);
-            int cumul = 0;
-            string mob = pool[0].Item1;
-            foreach (var (proto, weight) in pool)
-            {
-                cumul += weight;
-                if (roll < cumul) { mob = proto; break; }
-            }
+            var mob = SelectWeightedMob(pool, rng);
 
             for (int attempt = 0; attempt < 8; attempt++)
             {
                 int mx = room.X + 1 + rng.Next(innerW);
                 int my = room.Y + 1 + rng.Next(innerH);
                 if (taken.Contains((mx, my))) continue;
-                SpawnAt(mob, gridUid, grid, mx, my);
+                if (!SpawnPopulationMob(mob, population, gridUid, grid, mx, my).HasValue)
+                    break;
                 taken.Add((mx, my));
+                spawnedMobs++;
                 break;
             }
         }
+
+        // A room held by three or more super mutants is an explicit threat
+        // encounter, not ambient filler, and therefore always pays Tier 2/3.
+        if (mobTheme.Family == ExpeditionMobFamily.SuperMutant && spawnedMobs >= 3 && !reservedTile.HasValue)
+        {
+            var (lootX, lootY) = room.Center;
+            var lootSpawner = rng.Next(2) == 0
+                ? "M14ExpeditionWeaponLootTier2Guaranteed"
+                : "M14ExpeditionWeaponLootTier3Guaranteed";
+            SpawnAt(lootSpawner, gridUid, grid, lootX, lootY);
+        }
     }
 
-    // #Misfits Removed - GetMobGroups replaced by ThemeProfile.MobGroups
-    // private static (string, int)[][] GetMobGroups(UndergroundTheme theme) => ...;
+    /// <summary>
+    /// Spawns the sole planned final guardian after normal room encounters have
+    /// been placed. The boss always occupies the objective room and carries its
+    /// reward package until death.
+    /// </summary>
+    private void SpawnFinalGuardian(
+        RoomDef objectiveRoom,
+        EntityUid gridUid,
+        MapGridComponent grid,
+        MobThemeDefinition mobTheme,
+        string prototype,
+        int partySize,
+        Random rng)
+    {
+        var (x, y) = objectiveRoom.Center;
+        var boss = SpawnAt(prototype, gridUid, grid, x, y);
+        if (!boss.HasValue)
+        {
+            Log.Error($"[N14 ProcGen] Failed to spawn final guardian '{prototype}' for '{mobTheme.Name}'.");
+            return;
+        }
+
+        _bosses.ConfigureFinalGuardian(boss.Value, mobTheme.Family, prototype, partySize, rng);
+    }
+
+    /// <summary>
+    /// Restores distinct deep-room guardians without returning to the old
+    /// unbounded boss-roll pass. Guardians are faction-safe because they use
+    /// the selected expedition family and their rewards resolve only on death.
+    /// </summary>
+    private bool TrySpawnOptionalGuardian(
+        RoomDef room,
+        EntityUid gridUid,
+        MapGridComponent grid,
+        MobThemeDefinition mobTheme,
+        ExpeditionPopulationState population,
+        int partySize,
+        Random rng,
+        float depthFactor)
+    {
+        if (room.RoomType == RoomType.FactionHub || depthFactor < 0.65f)
+            return false;
+
+        var guardianChance = partySize switch
+        {
+            >= 5 => 28,
+            >= 3 => 22,
+            _ => 16,
+        };
+        if (rng.Next(100) >= guardianChance)
+            return false;
+
+        var prototype = SelectOptionalGuardianPrototype(mobTheme.Family, partySize, rng);
+        if (!population.CanReserve(prototype))
+            return false;
+
+        var innerW = room.W - 2;
+        var innerH = room.H - 2;
+        if (innerW < 1 || innerH < 1)
+            return false;
+
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            var x = room.X + 1 + rng.Next(innerW);
+            var y = room.Y + 1 + rng.Next(innerH);
+            var guardian = SpawnPopulationMob(prototype, population, gridUid, grid, x, y);
+            if (!guardian.HasValue)
+                continue;
+
+            _bosses.ConfigureOptionalGuardian(guardian.Value, mobTheme.Family, prototype, partySize, rng);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static int GetOptionalGuardianLimit(int partySize) => partySize switch
+    {
+        >= 5 => 3,
+        >= 3 => 2,
+        _ => 1,
+    };
+
+    private static string SelectFinalGuardianPrototype(ExpeditionMobFamily family, int partySize, Random rng)
+    {
+        return family switch
+        {
+            ExpeditionMobFamily.Deathclaw => SelectDeathclawApexPrototype(partySize, rng),
+            ExpeditionMobFamily.Ghoul => "N14MobGhoulMaypole",
+            ExpeditionMobFamily.SuperMutant => partySize >= 5
+                ? "N14MobBehemoth"
+                : rng.Next(2) == 0 ? "N14MobSuperMutantNCO" : "N14MobNightkinElite",
+            ExpeditionMobFamily.Robot => partySize >= 5
+                ? "N14MobRobotSentryBotBallistic"
+                : "N14MobRobotSentryBot",
+            ExpeditionMobFamily.Mirelurk => "N14MobRadMirelurk",
+            ExpeditionMobFamily.Nightstalker => partySize >= 5 ? "N14MobNightstalkerWave" : "N14MobNightstalker",
+            ExpeditionMobFamily.Radscorpion => partySize >= 5 ? "N14MobRadscorpionWave" : "N14MobRadscorpionBark",
+            ExpeditionMobFamily.Ant => partySize >= 5 ? "N14MobGiantFireAntWave" : "N14MobGiantFireAnt",
+            ExpeditionMobFamily.Raider => "N14MobRaiderHunter",
+            _ => partySize >= 5 ? "N14MobYaoguaiWaveBoss" : "N14MobYaoguai",
+        };
+    }
+
+    private static string SelectOptionalGuardianPrototype(ExpeditionMobFamily family, int partySize, Random rng)
+    {
+        return family switch
+        {
+            ExpeditionMobFamily.Deathclaw => SelectDeathclawApexPrototype(Math.Min(partySize, 4), rng),
+            ExpeditionMobFamily.Ghoul => "N14MobGhoulMaypole",
+            ExpeditionMobFamily.SuperMutant => partySize >= 5 && rng.Next(100) < 30
+                ? "N14MobBehemoth"
+                : rng.Next(2) == 0 ? "N14MobSuperMutantNCO" : "N14MobNightkinElite",
+            ExpeditionMobFamily.Robot => rng.Next(2) == 0
+                ? "N14MobRobotSentryBot"
+                : "N14MobRobotSentryBotBallistic",
+            ExpeditionMobFamily.Mirelurk => "N14MobRadMirelurk",
+            ExpeditionMobFamily.Nightstalker => "N14MobNightstalker",
+            ExpeditionMobFamily.Radscorpion => "N14MobRadscorpionBark",
+            ExpeditionMobFamily.Ant => "N14MobGiantFireAnt",
+            ExpeditionMobFamily.Raider => "N14MobRaiderHunter",
+            _ => "N14MobYaoguai",
+        };
+    }
+
+    private EntityUid? SpawnPopulationMob(
+        string prototype,
+        ExpeditionPopulationState population,
+        EntityUid gridUid,
+        MapGridComponent grid,
+        int x,
+        int y)
+    {
+        if (!population.CanReserve(prototype))
+            return null;
+
+        var spawned = SpawnAt(prototype, gridUid, grid, x, y);
+        if (!spawned.HasValue)
+            return null;
+
+        population.Reserve(prototype);
+        return spawned;
+    }
+
+    private static MobThemeDefinition SelectExpeditionMobTheme(ThemeProfile profile, Random rng)
+    {
+        if (profile.MobThemes.Length == 0)
+            throw new InvalidOperationException($"Expedition theme '{profile.Theme}' has no mob themes configured.");
+
+        var hodgepodge = profile.MobThemes.Where(theme => theme.IsHodgepodge).ToArray();
+        var focused = profile.MobThemes.Where(theme => !theme.IsHodgepodge).ToArray();
+        var useHodgepodge = hodgepodge.Length > 0 &&
+                            rng.Next(100) < HodgepodgeExpeditionChancePercent;
+        var candidates = useHodgepodge || focused.Length == 0 ? hodgepodge : focused;
+        return SelectWeightedTheme(candidates, rng);
+    }
+
+    private static MobThemeDefinition SelectWeightedTheme(MobThemeDefinition[] themes, Random rng)
+    {
+        var totalWeight = themes.Sum(theme => Math.Max(0, theme.SelectionWeight));
+        if (totalWeight <= 0)
+            return themes[0];
+
+        var roll = rng.Next(totalWeight);
+        foreach (var theme in themes)
+        {
+            roll -= Math.Max(0, theme.SelectionWeight);
+            if (roll < 0)
+                return theme;
+        }
+
+        return themes[^1];
+    }
+
+    private static string SelectWeightedMob((string Prototype, int Weight)[] pool, Random rng)
+    {
+        var totalWeight = pool.Sum(entry => Math.Max(0, entry.Weight));
+        if (totalWeight <= 0)
+            return pool[0].Prototype;
+
+        var roll = rng.Next(totalWeight);
+        foreach (var entry in pool)
+        {
+            roll -= Math.Max(0, entry.Weight);
+            if (roll < 0)
+                return entry.Prototype;
+        }
+
+        return pool[^1].Prototype;
+    }
+
+    /// <summary>
+    /// Scales encounter density from the launch-locked player roster. The cap
+    /// prevents a large group from filling every valid tile in a small chamber.
+    /// </summary>
+    private static float GetPartyMobMultiplier(int partySize) =>
+        1f + Math.Min(Math.Max(partySize, 1) - 1, 4) * 0.2f;
+
+    /// <summary>
+    /// Keeps solo/small expeditions on the ordinary deathclaw, progresses to
+    /// themed elite variants for a coordinated party, and reserves WaveBoss
+    /// variants for five or more entrants. WaveBoss prototypes are self-contained
+    /// hostile NPCs; their WaveMob tag only participates when a wave rule exists.
+    /// </summary>
+    private static string SelectDeathclawApexPrototype(int partySize, Random rng)
+    {
+        return partySize switch
+        {
+            <= 2 => "N14MobDeathclaw",
+            3 => rng.Next(2) == 0 ? "N14MobDeathclaw" : "N14MobDeathclawAlbino",
+            4 => rng.Next(3) switch
+            {
+                0 => "N14MobDeathclawAlbino",
+                1 => "N14MobDeathclawMetal",
+                _ => "N14MobDeathclawicy",
+            },
+            _ => rng.Next(3) switch
+            {
+                0 => "N14MobDeathclawWaveBoss",
+                1 => "N14MobDeathclawAlbinoWaveBoss",
+                _ => "N14MobDeathclawMetalWaveBoss",
+            },
+        };
+    }
+
+    // #Misfits Removed - per-room mob group selection replaced by one
+    // expedition-wide ThemeProfile.MobThemes selection.
 
     // =========================================================================
     // Tile helper
@@ -2298,10 +3351,43 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     // Spawn helper
     // =========================================================================
 
-    private void SpawnAt(string proto, EntityUid gridUid, MapGridComponent grid, int x, int y)
+    private EntityUid? SpawnAt(string proto, EntityUid gridUid, MapGridComponent grid, int x, int y)
     {
+        // Decorative dressing must not abort a generated expedition because an
+        // optional prototype was retired or renamed.
+        if (!_prototypeManager.HasIndex<EntityPrototype>(proto))
+        {
+            Log.Warning($"[N14 ProcGen] Skipping missing optional prototype '{proto}' at {x},{y}.");
+            return null;
+        }
+
         var coords = _mapSystem.GridTileToLocal(gridUid, grid, new Vector2i(x, y));
-        Spawn(proto, coords);
+        return Spawn(proto, coords);
+    }
+
+    private static bool ShouldSpawnWeaponLoot(RoomDef room, int difficultyTier, Random random)
+    {
+        if (room.RoomType == RoomType.FactionHub)
+            return false;
+
+        return room.RoomType switch
+        {
+            RoomType.VaultArmory or RoomType.VaultVault or RoomType.SewerCamp or RoomType.SewerPump or RoomType.MetroDepot => true,
+            _ => random.NextDouble() < 0.20 + Math.Clamp(difficultyTier, 0, 3) * 0.05,
+        };
+    }
+
+    private static int GetExplorationWeaponLootCount(RoomDef room, int difficultyTier, int partySize, Random random)
+    {
+        if (!ShouldSpawnWeaponLoot(room, difficultyTier, random))
+            return 0;
+
+        var count = 1;
+        if (partySize >= 3 && random.NextDouble() < 0.35)
+            count++;
+        if (partySize >= 5 && random.NextDouble() < 0.40)
+            count++;
+        return count;
     }
 
     // =========================================================================
@@ -2319,7 +3405,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
     private static bool IsTraversableAt(CellType[,] cellMap, int x, int y, int W, int H)
     {
         if (x < 0 || x >= W || y < 0 || y >= H) return false;
-        return cellMap[x, y] is CellType.Room or CellType.FactionHub or CellType.Corridor;
+        return cellMap[x, y] is CellType.Room or CellType.FactionHub or CellType.Corridor or CellType.Platform;
     }
 
     private static bool InBounds(int x, int y, int W, int H) =>
@@ -2345,7 +3431,7 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
             return;
         }
 
-        var prev  = new Dictionary<(int, int), (int, int)>();
+        var prev = new Dictionary<(int, int), (int, int)>();
         var queue = new Queue<(int, int)>();
         queue.Enqueue(from);
         prev[from] = from;
@@ -2446,20 +3532,23 @@ public sealed class UndergroundExpeditionMapGenerator : EntitySystem
         {
             // #Misfits Removed - FactionHub case removed; hubs never receive mob spawns (player entry rooms)
             //RoomType.FactionHub      => 2 + difficultyTier,
-            RoomType.Central          => 2 + difficultyTier,
-            RoomType.VaultOverseer    => 2,
-            RoomType.VaultVault       => 1 + (difficultyTier / 2),
-            RoomType.VaultKitchen     => 1,
+            RoomType.Central => 2 + difficultyTier,
+            RoomType.VaultOverseer => 2,
+            RoomType.VaultVault => 1 + (difficultyTier / 2),
+            RoomType.VaultKitchen => 1,
             RoomType.VaultHydroponics => 1,                        // #Misfits Add - occasional wandering ghoul
-            RoomType.VaultRecreation  => 1,                        // #Misfits Add
-            RoomType.VaultArmory      => 3 + (difficultyTier / 2),
-            RoomType.VaultReactor     => 1,
-            RoomType.SewerNest        => 4 + difficultyTier,
-            RoomType.SewerCamp        => 2 + difficultyTier,       // #Misfits Add - defended survivor camp
-            RoomType.SewerPump        => 2,
-            RoomType.MetroCommand     => 2 + (difficultyTier / 2),
-            RoomType.MetroPlatform    => 2 + (difficultyTier / 2),
-            _                         => 1,
+            RoomType.VaultRecreation => 1,                        // #Misfits Add
+            RoomType.VaultArmory => 3 + (difficultyTier / 2),
+            RoomType.VaultReactor => 1,
+            RoomType.SewerNest => 5 + difficultyTier,
+            RoomType.SewerGrotto => 3 + difficultyTier,
+            RoomType.SewerJunction => 2 + difficultyTier,
+            RoomType.SewerTunnel => 2 + (difficultyTier / 2),
+            RoomType.SewerCamp => 3 + difficultyTier,
+            RoomType.SewerPump => 3 + (difficultyTier / 2),
+            RoomType.MetroCommand => 2 + (difficultyTier / 2),
+            RoomType.MetroPlatform => 2 + (difficultyTier / 2),
+            _ => 1,
         };
 
     /// <summary>

@@ -7,6 +7,7 @@
       inverted: true
       departments:
         - BrotherhoodOfSteel
+        - BrotherhoodOfSteelLancers
   - !type:CharacterJobRequirement # Forge-Change
     inverted: true
     jobs:
@@ -17,6 +18,7 @@
     - NCRCommander
     - NCRExecutiveOfficer
     - NCRPlatoonLeader
+    - NCRVertibirdPilot
     - NCRDoctor
     - NCRVeteranRanger
     - NCRFieldRanger
@@ -39,6 +41,8 @@
     #- BoSMidInquisitor # Misfits Fix: job prototype commented out
     - BoSMidScribe
     - BoSMidKnight
+    - BoSLancerKnight
+    # #Cythisiax Removed - Lancer rank folded into Lancer-Knight
     - BoSMidSquire
     - CaesarLegionCenturion
     - CaesarLegionLegate
@@ -55,6 +59,7 @@
     - CaesarLegionLegionnaireRecruit
     - CaesarLegionHoundmaster
     - CaesarLegionAuxilia
+    - CaesarLegionTempleGuard
     # #Misfits Change: CaesarLegionRecruit removed — Legionnaire covers entry-level.
     - Overseer
     - VaultSecurity
@@ -72,7 +77,7 @@
 - type: trait
   id: N14Nearsighted
   category: Visual
-  points: 1
+  points: 2
   requirements:
   - !type:CharacterTraitRequirement
     inverted: true

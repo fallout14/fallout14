@@ -12,7 +12,7 @@ using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
-
+using Robust.Shared.Timing;
 // #Misfits Add - Server system for holotape reading and terminal random content.
 // Handles: holotape insertion into readers, terminal click-to-read, MapInit content setup.
 // #Misfits Add - Integrates with TerminalNotebookSystem to include notes in terminal state.
@@ -179,6 +179,23 @@ public sealed class HolotapeSystem : EntitySystem
         // #Misfits Add - Single state builder shared with RefreshTerminalState.
         var state = BuildTerminalState(uid, args.User, openDatabaseDocumentId: null);
         _ui.SetUiState(uid, HolotapeUiKey.Key, state);
+        
+        var target = uid; 
+        var user = args.User;
+
+        // Delay 1 tick before refreshing UI state to ensure contents load on first open.
+        // remove when actual underlying problem is found
+        Timer.Spawn(TimeSpan.Zero, () =>
+            {
+                if (Deleted(target))
+                    return;
+
+                if (!_ui.HasUi(target, HolotapeUiKey.Key))
+                    return;
+
+                var freshState = BuildTerminalState(target, user, openDatabaseDocumentId: null);
+                _ui.SetUiState(target, HolotapeUiKey.Key, freshState);
+            });
     }
 
     // #Misfits Add - Public re-entry point used by TerminalDatabaseSystem after every
@@ -239,11 +256,14 @@ public sealed class HolotapeSystem : EntitySystem
         }
 
         // ── DATABASE tab: viewer-driven faction database resolution ────────
-        // #Misfits Change - DATABASE tab is now on every terminal. The viewer's ID
-        // access tags determine which faction database (if any) they see. Wastelanders
-        // and IDless characters get a NO ACCESS sentinel state from BuildState.
-        var dbSystem = EntityManager.System<TerminalDatabaseSystem>();
-        var databaseState = dbSystem.BuildState(uid, actor, openDatabaseDocumentId);
+        // #Misfits Change - DATABASE is exposed only by explicit terminal gateways.
+        // The viewer's ID still determines which faction database (if any) they see.
+        TerminalDatabaseState? databaseState = null;
+        if (HasComp<TerminalDatabaseAccessComponent>(uid))
+        {
+            var dbSystem = EntityManager.System<TerminalDatabaseSystem>();
+            databaseState = dbSystem.BuildState(uid, actor, openDatabaseDocumentId);
+        }
         var overwatchState = EntityManager.System<Content.Server._Misfits.Overwatch.OverwatchConsoleSystem>()
             .BuildUiState(uid);
 
